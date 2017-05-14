@@ -1,0 +1,6 @@
+skybox: 
+http://jones.felk.cvut.cz/redmine/projects/tacticalenvironment/repository/revisions/250b25eb9c04/entry/src/main/resources/models/skybox/skybox_cubemap.png
+
+models:
+todo
+

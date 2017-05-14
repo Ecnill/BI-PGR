@@ -1,0 +1,55 @@
+# Simple config file, please don't change names of properties.
+
+# window info:
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 800
+WINDOW_TITLE = Train Scene
+
+###############################################################
+
+# Shaders
+
+# 1) Skybox:
+SHADER_SKYBOX_PREFIX = ./shaders/skybox
+SHADER_LIGHT_PREFIX = ./shaders/light
+
+###############################################################
+
+# Objects' path
+
+# 1) Skybox:
+SKYBOX_CUBE_TEXTURE_FILE_PREFIX = ./data/skybox/skybox
+
+# 2) Train:
+TRAIN_MODEL_PATH = ./data/models/train/train_enginecar.obj 
+TRAIN_SIZE = 0.35
+
+# 3): 
+FREIGHTN_MODEL_PATH = ./data/models/freight/train_orecar.obj
+FREIGHT_SIZE = 0.35
+
+# 4) Factory:
+FACTORY_MODEL_PATH = ./data/models/factory/factory.obj
+FACTORY_SIZE = 7.5
+
+# 5) Windmill
+WINDMILL_MODEL_PATH = ./data/models/windmill/windmill.obj
+WINDMILL_SIZE = 0.5
+
+# 6) Track:
+TRACK_MODEL_PATH = ./data/models/track/track.obj
+TRACK_SIZE = 0.5
+#positions of single track parts:
+(0.7, 0.0, 0.0)
+(1.135, -0.9, 0.0)
+(1.55, -1.8, 0.0)
+(1.95, -2.7, 0.0)
+(2.0, -3.4, 0.0)
+(0.3, 0.9, 0.0)
+
+###############################################################
+
+# other variables
+
+USR_LIGHT = true
+
