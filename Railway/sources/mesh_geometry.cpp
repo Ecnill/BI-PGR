@@ -102,7 +102,7 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 		glEnableVertexAttribArray(shader.posLocation);
 		glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		if (ConfigHolder::getInstance()->USR_LIGHT) {
+		if (ConfigHolder::getInstance()->USE_LIGHT) {
 			glEnableVertexAttribArray(shader.normalLocation);
 			glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float) * mesh->mNumVertices));
 		} else {
@@ -143,7 +143,7 @@ CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, con
 	// vertices of triangles - start at the beginning of the array
 	glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
 
-	if (ConfigHolder::getInstance()->USR_LIGHT) {
+	if (ConfigHolder::getInstance()->USE_LIGHT) {
 		glEnableVertexAttribArray(shader.normalLocation);
 		// normal of vertex starts after the color (interlaced array)
 		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
@@ -160,8 +160,6 @@ CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, con
 
 	Material *m = new Material;
 
-	
-
 	m->ambient = glm::vec3(0.0f, 1.0f, 1.0f);
 	m->diffuse = glm::vec3(0.0f, 1.0f, 1.0f);
 	m->specular = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -173,44 +171,7 @@ CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, con
 	SubMeshGeometry *s = new SubMeshGeometry;
 	s->material = m;
 	geometry->subMeshVector.push_back(s);
-
-
-
-
 	return geometry;
-
-	//CodeMeshGeometry *geometry = new CodeMeshGeometry;
-	//glGenVertexArrays(1, &(geometry->vertexArrayObject));
-	//glBindVertexArray(geometry->vertexArrayObject);
-
-	//glGenBuffers(1, &(geometry->vertexBufferObject));
-	//glBindBuffer(GL_ARRAY_BUFFER, geometry->vertexBufferObject);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-	//// copy our temporary index array to opengl and free the array
-	//glGenBuffers(1, &(geometry->elementBufferObject));
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry->elementBufferObject);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
-
-	//glEnableVertexAttribArray(shader.posLocation);
-	//// vertices of triangles - start at the beginning of the array
-	//glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-
-
-	//glEnableVertexAttribArray(shader.normalLocation);
-	//// normal of vertex starts after the color (interlaced array)
-	//glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-
-	////glEnableVertexAttribArray(shader.colorLocation);
-	////// color of vertex starts after the position (interlaced arrays)
-	////glVertexAttribPointer(shader.colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	//glBindVertexArray(0);
-
-	//geometry->numTriangles = triangles.size() / 3;
-	//CHECK_GL_ERROR();
-	//return geometry;
 }
 
 
@@ -274,19 +235,19 @@ SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glGenTextures(1, &(texture));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
-	const char *suffixes[] = { "posx", "negx", "posy", "negy", "posz", "negz" };
+	
 	GLuint targets[] = {
 		GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
 		GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 		GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 	CHECK_GL_ERROR();
-	for (int i = 0; i < 6; ++i) {
-		std::string texName = std::string(ConfigHolder::getInstance()->SKYBOX_CUBE_TEXTURE_FILE_PREFIX) + "_" + suffixes[i] + ".jpg";
-		std::cout << "Loading cube map texture: " << texName << std::endl;
-		if (!pgr::loadTexImage2D(texName, targets[i])) {
+	auto skyboxFiles = ConfigHolder::getInstance()->SKYBOX_CUBE_TEXTURE_FILES;
+	for (size_t i = 0; i < skyboxFiles.size(); ++i) {
+		if (!pgr::loadTexImage2D(skyboxFiles[i], targets[i])) {
 			pgr::dieWithError("Skybox cube map loading failed!");
 		}
+		std::cout << "Loading cube map texture: " << skyboxFiles[i] << std::endl;
 		CHECK_GL_ERROR();
 	}
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

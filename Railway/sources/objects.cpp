@@ -1,8 +1,8 @@
 #include "../headers/objects.h"
 
 void Object::setTime(float startTime) {
-	this->startTime = startTime;
-	this->currentTime = startTime;
+	startTime = startTime;
+	currentTime = startTime;
 }
 
 void Object::update(float elapsedTime) {
@@ -17,10 +17,10 @@ void Object::showObjectCreatedMessage() {
 
 TrainObject::TrainObject() : destroyed(false) {
 	showObjectCreatedMessage();
-	this->size = config->TRAIN_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = TRAIN_POSITION;
-	this->speed = TRAIN_SPEED;
+	size = config->TRAIN_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = TRAIN_POSITION;
+	speed = config->TRAIN_SPEED;
 
 	modelMatrix = translate(mat4(1.0f), position);
 	modelMatrix = rotate(modelMatrix, -65.0f, vec3(0, 0, 1));
@@ -28,63 +28,124 @@ TrainObject::TrainObject() : destroyed(false) {
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
-TrainCarObject::TrainCarObject() {
+FlatCarObject::FlatCarObject() {
 	showObjectCreatedMessage();
-	this->size = config->TRAIN_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = TRAIN_CAR_POSITION;
+	size = config->FLATCAR_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = FLATCAR_POSITION;
+	speed = config->TRAIN_SPEED;
 
 	modelMatrix = translate(mat4(1.0f), position);
 	modelMatrix = rotate(modelMatrix, -65.0f, vec3(0, 0, 1));
 	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+
+FreightcarObject::FreightcarObject(vec3 position) {
+	showObjectCreatedMessage();
+	size = config->FREIGHTCAR_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = position;
+
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = rotate(modelMatrix, 30.0f, vec3(0, 1, 0));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
 FactoryObject::FactoryObject() {
 	showObjectCreatedMessage();
-	this->size = config->FACTORY_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = FACTORY_POSITION;
+	size = config->FACTORY_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = FACTORY_POSITION;
 
-	modelMatrix = translate(glm::mat4(1.0f), position);
+	modelMatrix = translate(mat4(1.0f), position);
 	modelMatrix = rotate(modelMatrix, 180.0f, vec3(0, 0, 1));
 	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
 	modelMatrix = rotate(modelMatrix, 20.0f, vec3(0, 1, 0));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
-TrackObject::TrackObject(vec3 position) {
+DumpsterType1Object::DumpsterType1Object() {
 	showObjectCreatedMessage();
-	this->size = config->TRACK_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = position;
+	size = config->DUMPSTER_1_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = DUMPSTER_1_POSITION;
+	
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+DumpsterType2Object::DumpsterType2Object() {
+	showObjectCreatedMessage();
+	size = config->DUMPSTER_2_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = DUMPSTER_2_POSITION;
 
 	modelMatrix = translate(mat4(1.0f), position);
-	modelMatrix = rotate(modelMatrix, 25.0f, glm::vec3(0, 0, 1));
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+HouseType1Object::HouseType1Object() {
+	showObjectCreatedMessage();
+	size = config->HOUSE_1_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = HOUSE_1_POSITION;
+
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(0, 0, 1));
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = rotate(modelMatrix, 20.0f, vec3(0, 1, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+HouseType2Object::HouseType2Object() {
+	showObjectCreatedMessage();
+	size = config->HOUSE_1_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = HOUSE_2_POSITION;
+
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(0, 0, 1));
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = rotate(modelMatrix, 40.0f, vec3(0, 1, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+TrackObject::TrackObject(vec3 position) {
+	showObjectCreatedMessage();
+	size = config->TRACK_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = position;
+
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 25.0f, vec3(0, 0, 1));
 	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
 WindmillObject::WindmillObject(vec3 position) {
 	showObjectCreatedMessage();
-	this->size = config->WINDMILL_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = position;
+	size = config->WINDMILL_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = position;
 		
 	modelMatrix = translate(glm::mat4(1.0f), position);
-	modelMatrix = rotate(modelMatrix, 90.0f, glm::vec3(0, 0, 1));
-	modelMatrix = rotate(modelMatrix, 90.0f, glm::vec3(1, 0, 0));
-	modelMatrix = scale(modelMatrix, glm::vec3(size, size, size));
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(0, 0, 1));
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
+	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
 StoneObject::StoneObject() {
 	showObjectCreatedMessage();
-	this->size = STONE_SIZE;
-	this->direction = DEFAULT_DIRECTION;
-	this->position = STONE_POSITION;
+	size = STONE_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = STONE_POSITION;
 
 	modelMatrix = translate(glm::mat4(1.0f), position);
-
 	modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }

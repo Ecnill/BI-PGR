@@ -18,18 +18,19 @@ enum {
 	MENU_LIGHTING = 1, MENU_EXIT
 };
 
-void manageCallbacks();		// calls all callbacks except finalizeCallback();
+void manageCallbacks();		// calls all callbacks except finalize
 
 void displayCallback();
-
 void reshapeCallback(int newWidth, int newHeight);
+
 void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY);
 void keyboardUpCallback(unsigned char keyPressed, int mouseX, int mouseY);
 void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY);
 void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY);
-void timerCallback(int);
-void passiveMouseMotionCallback(int mouseX, int mouseY);
 
+void timerCallback(int);
+
+void passiveMouseMotionCallback(int mouseX, int mouseY);
 void mouseWheelCallback(int button, int dir, int x, int y);
 
 void selectFromMenuCallback(int command);

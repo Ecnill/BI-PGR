@@ -171,7 +171,7 @@ int buildPopupMenu(void) {
 void selectFromMenuCallback(int command) {
 	switch (command) {
 		case MENU_LIGHTING: {
-			config->USR_LIGHT = !config->USR_LIGHT;
+			config->USE_LIGHT = !config->USE_LIGHT;
 			scene->restart();
 			break;
 		}

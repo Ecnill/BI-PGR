@@ -40,11 +40,16 @@ class Scene {
 		
 		// models
 		void initModels();
-		Object				*train;
-		Object				*trainCar;
-		Object				*factory;
-		StoneObject			*stone;
-		SkyBoxObject		*skybox;
+		Object *train;
+		Object *trainFlatcar;
+		Object *factory;
+		Object *dumpsterType1;
+		Object *dumpsterType2;
+		Object *houseType1;
+		Object *houseType2;
+		StoneObject *stone;
+		SkyBoxObject *skybox;
+		std::vector<Object*> trainFreightcars;
 		std::vector<Object*> windmills;
 		std::vector<Object*> track;
 

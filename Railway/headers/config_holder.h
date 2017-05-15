@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <string>
 #include <iomanip>
 #include <algorithm>
@@ -23,36 +24,57 @@ class ConfigHolder {
 		string WINDOW_TITLE;
 
 		// program variables
-		bool USR_LIGHT;
+		bool USE_LIGHT;
+		float TRAIN_SPEED;
 
 		// shaders
 		pair<string, string> SHADER_SKYBOX;
 		pair<string, string> SHADER_LIGHT;
 		
 		// objects
-		string	TRAIN_MODEL_PATH;
-		float	TRAIN_SIZE;
+		float TRAIN_SIZE;
+		string TRAIN_MODEL_PATH;
 
-		string FREIGHTN_MODEL_PATH;
+		float FLATCAR_SIZE;
+		string FLATCAR_MODEL_PATH;
 
-		string TRACK_MODEL_PATH;
+		float FREIGHTCAR_SIZE;
+		string FREIGHTCAR_MODEL_PATH;
+
 		float TRACK_SIZE;
+		string TRACK_MODEL_PATH;
 		vector<glm::vec3> TRACK_PART_POSITIONS;
 
-		string FACTORY_MODEL_PATH;
 		float FACTORY_SIZE;
+		string FACTORY_MODEL_PATH;
 
-		string WINDMILL_MODEL_PATH;
+		float DUMPSTER_1_SIZE;
+		string DUMPSTER_1_MODEL_PATH;
+
+		float DUMPSTER_2_SIZE;
+		string DUMPSTER_2_MODEL_PATH;
+
+		float HOUSE_1_SIZE;
+		string HOUSE_1_MODEL_PATH;
+
+		float HOUSE_2_SIZE;
+		string HOUSE_2_MODEL_PATH;
+		
 		float WINDMILL_SIZE;
-
-		string SKYBOX_CUBE_TEXTURE_FILE_PREFIX;
+		string WINDMILL_MODEL_PATH;
+		
+		vector<string> SKYBOX_CUBE_TEXTURE_FILES;
 
 	private:
-		static ConfigHolder *instance;
 		string filePath;
 
-		static bool toBool(string &str);
-		static glm::vec3 parsePosition(string &str);
+		vector<string> createSkyboxTextureFilenames(string &prefix);
+		pair<string, string> createShaderFilenames(string &prefix);
+
+		static ConfigHolder *instance;
+
+		static bool stringToBool(string &str);
+		static glm::vec3 stringToVec3(string &str);
 };
 
 #endif // __CONFIG_HOLDER_H

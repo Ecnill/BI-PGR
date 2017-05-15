@@ -1,4 +1,5 @@
 #include "../headers/scene.h"
+
 Scene *Scene::instance = nullptr;
 
 Scene *Scene::getInstance() {
@@ -28,7 +29,7 @@ void Scene::start() {
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(5.0f);
 
-	useLight = config->USR_LIGHT;
+	useLight = config->USE_LIGHT;
 	initShaders();
 	restart();
 }
@@ -40,7 +41,7 @@ void Scene::initShaders() {
 
 void Scene::restart() {
 	config->reloadConfigFile();
-	useLight = config->USR_LIGHT;
+	useLight = config->USE_LIGHT;
 
 	deleteModels();
 	if (camera != nullptr) delete camera;
@@ -71,14 +72,21 @@ void Scene::show() {
 	
 	drawSkybox();
 	drawMesh(train->geometry.get(), train->modelMatrix);
-	drawMesh(trainCar->geometry.get(), trainCar->modelMatrix);
-	drawMesh(trainCar->geometry.get(), trainCar->modelMatrix);
+	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	drawMesh(factory->geometry.get(), factory->modelMatrix);
+	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
+	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
+	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
+	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
-	for (Object *mill : windmills) {
+	for (auto car : trainFreightcars) {
+		drawMesh(car->geometry.get(), car->modelMatrix);
+	}
+
+	for (auto mill : windmills) {
 		drawMesh(mill->geometry.get(), mill->modelMatrix);
 	}
-	for (Object *trackPart : track) {
+	for (auto trackPart : track) {
 		drawMesh(trackPart->geometry.get(), trackPart->modelMatrix);
 	}
 //	drawMesh(stone->geometry, stone->modelMatrix);
@@ -120,7 +128,7 @@ void Scene::drawSkybox() {
 void Scene::updateObjects(float elapsedTime) {
 	camera->currentTime = elapsedTime;
 	train->update(elapsedTime);
-	trainCar->update(elapsedTime);
+	trainFlatcar->update(elapsedTime);
 }
 
 void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHeight) {
@@ -131,18 +139,36 @@ void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHei
 void Scene::initModels() {
 	train = new TrainObject;
 	train->geometry = ObjectMeshGeometry::loadMultiMesh(config->TRAIN_MODEL_PATH, this->lightProgram);
-
-	trainCar = new TrainCarObject;
-	trainCar->geometry = ObjectMeshGeometry::loadMultiMesh(config->FREIGHTN_MODEL_PATH, this->lightProgram);
-
+	
+	trainFlatcar = new FlatCarObject;
+	trainFlatcar->geometry = ObjectMeshGeometry::loadMultiMesh(config->FLATCAR_MODEL_PATH, this->lightProgram);
+	
 	skybox = new SkyBoxObject;
 	skybox->geometry = new SkyBoxGeometry(skyboxProgram);
 
 	factory = new FactoryObject;
 	factory->geometry = ObjectMeshGeometry::loadMultiMesh(config->FACTORY_MODEL_PATH, this->lightProgram);
 
+	dumpsterType1 = new DumpsterType1Object;
+	dumpsterType1->geometry = ObjectMeshGeometry::loadMultiMesh(config->DUMPSTER_1_MODEL_PATH, this->lightProgram);
+
+	dumpsterType2 = new DumpsterType2Object;
+	dumpsterType2->geometry = ObjectMeshGeometry::loadMultiMesh(config->DUMPSTER_2_MODEL_PATH, this->lightProgram);
+
+	houseType1 = new HouseType1Object;
+	houseType1->geometry = ObjectMeshGeometry::loadMultiMesh(config->HOUSE_1_MODEL_PATH, this->lightProgram);
+
+	houseType2 = new HouseType2Object;
+	houseType2->geometry = ObjectMeshGeometry::loadMultiMesh(config->HOUSE_2_MODEL_PATH, this->lightProgram);
+
+	std::shared_ptr<MeshGeometry> freightcarGeometry = ObjectMeshGeometry::loadMultiMesh(config->FREIGHTCAR_MODEL_PATH, this->lightProgram);
+	for (size_t i = 0; i < 3; ++i) {
+		Object *freightcar = new FreightcarObject(vec3(-0.1f, 1.5f + 0.5f * i / 2, 0.0f));
+		freightcar->geometry = freightcarGeometry;
+		trainFreightcars.push_back(freightcar);
+	}
+
 	std::shared_ptr<MeshGeometry> millGeometry = ObjectMeshGeometry::loadMultiMesh(config->WINDMILL_MODEL_PATH, this->lightProgram);
-	
 	for (int y = -10; y <= 10; y += 4) {
 		Object *mill = new WindmillObject(vec3(10.0f, y, 0.0f));
 		mill->geometry = millGeometry;
@@ -175,40 +201,25 @@ void Scene::resetProgram() {
 
 Scene::~Scene() {
 	deleteModels();
+	delete skybox; 
 	delete camera;
 	pgr::deleteProgramAndShaders(lightProgram.program);
 	pgr::deleteProgramAndShaders(skyboxProgram.program);
 }
 
 void Scene::deleteModels() {
-	if (train != nullptr) {
-		delete train;
-		train = nullptr;
-	}
-	if (trainCar != nullptr) {
-		delete trainCar;
-		trainCar = nullptr;
-	}
-	if (factory != nullptr) {
-		delete factory;
-		factory = nullptr;
-	}
-	if (skybox != nullptr) {
-		delete skybox;
-		skybox = nullptr;
-	}
-	for (Object *ob : windmills) {
-		delete ob;
-		ob = nullptr;
-	}
+	if (train != nullptr) { delete train; train = nullptr; }
+	if (trainFlatcar != nullptr) { delete trainFlatcar; trainFlatcar = nullptr; }
+	if (factory != nullptr) { delete factory; factory = nullptr; }
+	if (dumpsterType1 != nullptr) { delete dumpsterType1; dumpsterType1 = nullptr; }
+	if (dumpsterType2 != nullptr) { delete dumpsterType2; dumpsterType2 = nullptr; }
+	if (houseType1 != nullptr) { delete houseType1; houseType1 = nullptr; }
+	if (houseType2 != nullptr) { delete houseType2; houseType2 = nullptr; }
+	if (stone != nullptr) { delete stone; stone = nullptr; }
+	for (auto ob : trainFreightcars) { delete ob; ob = nullptr; }
+	trainFreightcars.clear();
+	for (auto ob : windmills) { delete ob; ob = nullptr; }
 	windmills.clear();
-	for (Object *ob : track) {
-		delete ob;
-		ob = nullptr;
-	}
+	for (auto ob : track) { delete ob; ob = nullptr; }
 	track.clear();
-	if (stone != nullptr) {
-		delete stone;
-		stone = nullptr;
-	}
 }

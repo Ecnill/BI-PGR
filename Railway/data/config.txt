@@ -1,6 +1,9 @@
 # Simple config file, please don't change names of properties.
 
-# window info:
+###############################################################
+
+# Window
+
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 800
 WINDOW_TITLE = Train Scene
@@ -9,34 +12,53 @@ WINDOW_TITLE = Train Scene
 
 # Shaders
 
-# 1) Skybox:
 SHADER_SKYBOX_PREFIX = ./shaders/skybox
 SHADER_LIGHT_PREFIX = ./shaders/light
 
 ###############################################################
 
-# Objects' path
+# Objects
 
-# 1) Skybox:
+# 0) Skybox:
 SKYBOX_CUBE_TEXTURE_FILE_PREFIX = ./data/skybox/skybox
 
-# 2) Train:
+# 1) Train:
 TRAIN_MODEL_PATH = ./data/models/train/train_enginecar.obj 
-TRAIN_SIZE = 0.35
+TRAIN_SIZE = 0.3
 
-# 3): 
-FREIGHTN_MODEL_PATH = ./data/models/freight/train_orecar.obj
-FREIGHT_SIZE = 0.35
+# 2) Freightcar: 
+FREIGHTCAR_MODEL_PATH = ./data/models/freight/train_orecar.obj
+FREIGHTCAR_SIZE = 0.3
+
+# 3) Flatcar:
+FLATCAR_MODEL_PATH = ./data/models/flatcar/train_flatcar.obj
+FLATCAR_SIZE = 0.3
 
 # 4) Factory:
 FACTORY_MODEL_PATH = ./data/models/factory/factory.obj
-FACTORY_SIZE = 7.5
+FACTORY_SIZE = 8.0
 
 # 5) Windmill
 WINDMILL_MODEL_PATH = ./data/models/windmill/windmill.obj
 WINDMILL_SIZE = 0.5
 
-# 6) Track:
+# 6) Dumpster_1
+DUMPSTER_MODE1_1_PATH = ./data/models/dumpster1/dumpster1.obj
+DUMPSTER_1_SIZE = 0.13
+
+# 7) Dumpster_2
+DUMPSTER_2_MODEL_PATH = ./data/models/dumpster2/Dumpster.obj
+DUMPSTER_2_SIZE = 0.15
+
+# 8) House_1:
+HOUSE_1_MODEL_PATH = ./data/models/house/WoodHouse.obj
+HOUSE_1_SIZE = 0.4
+
+# 9) House_2:
+HOUSE_2_MODEL_PATH = ./data/models/house2/Stable.obj
+HOUSE_2_SIZE = 0.3
+
+# 10) Track:
 TRACK_MODEL_PATH = ./data/models/track/track.obj
 TRACK_SIZE = 0.5
 #positions of single track parts:
@@ -51,5 +73,5 @@ TRACK_SIZE = 0.5
 
 # other variables
 
-USR_LIGHT = true
-
+USE_LIGHT = true
+TRAIN_SPEED = 0.5
