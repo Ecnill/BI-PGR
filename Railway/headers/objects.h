@@ -11,50 +11,77 @@ using namespace glm;
 
 #define FACTORY_POSITION	vec3(15.0f, 10.0f, 0.0f)
 #define TRAIN_POSITION		vec3(0.7f, 0.0f, 0.1f)
+#define HELICOPTER_POSITION	vec3(2.7f, 0.0f, 1.5f)
 #define FLATCAR_POSITION	vec3(0.4f, 0.5f, 0.1f)
 #define DUMPSTER_1_POSITION	vec3(0.5f, -0.5f, 0.0f)
 #define DUMPSTER_2_POSITION	vec3(0.0f, 0.5f, 0.0f)
 #define HOUSE_1_POSITION	vec3(-1.0f, 0.7f, 0.0f)
 #define HOUSE_2_POSITION	vec3(-1.0f, -0.3f, 0.0f)
 
+#define HELICOPTER_CURVE_SIZE 50
+#define TRAIN_CURVE_SIZE	50
+
 #define STONE_SIZE			22.5f
 #define STONE_POSITION		vec3(-10.0f, 0.0f, 0.0f)
 
 class Object {
 	public:
-		Object() : speed(0.0f) {}
-		void setTime(float startTime);
-		void update(float elapsedTime);
-
 		vec3 position;
 		vec3 direction;
 		mat4 modelMatrix;
 		std::shared_ptr<MeshGeometry> geometry;
 
 	protected:
-		virtual std::string getObjectName() = 0;
-		void showObjectCreatedMessage();
-
-		float startTime;
-		float currentTime;
 		float size;
-		float speed;
 
 		ConfigHolder *config = ConfigHolder::getInstance();
+
+		virtual std::string getObjectName() = 0;
+		void showObjectCreatedMessage();
 };
 
-class TrainObject : public Object {
+class DynamicObject : public Object {
+	public:
+		void setTime(float startTime);
+		void update(float elapsedTime);
+		virtual ~DynamicObject();
+
+	protected:
+		float startTime;
+		float currentTime;
+		float speed;
+		vec3 *curveData;
+		size_t curveSize;
+		vec3 startPosition;
+
+		virtual void initCurveData() = 0;
+};
+
+class TrainObject : public DynamicObject {
 	public:
 		TrainObject();
 		std::string getObjectName() { return "TrainObject"; }
-
 		bool destroyed;
+	private:
+		void initCurveData();
+	
 };
 
-class FlatCarObject : public Object {
+class HelicopterObject : public DynamicObject {
 	public:
-		FlatCarObject();
+		HelicopterObject();
+		std::string getObjectName() { return "HelicopterObject"; }
+	private:
+		void initCurveData();
+	
+};
+
+class FlatcarObject : public DynamicObject {
+	public:
+		FlatcarObject();
 		std::string getObjectName() { return "FlatCarObject"; }
+	private:
+		void initCurveData();
 };
 
 class FreightcarObject : public Object {
@@ -84,25 +111,25 @@ class WindmillObject : public Object {
 class DumpsterType1Object : public Object {
 	public:
 		DumpsterType1Object();
-		std::string getObjectName() { return "Dumpster1Object"; }
+		std::string getObjectName() { return "DumpsterType1Object"; }
 };
 
 class DumpsterType2Object : public Object {
 	public:
 		DumpsterType2Object();
-		std::string getObjectName() { return "Dumpster2Object"; }
+		std::string getObjectName() { return "DumpsterType2Object"; }
 };
 
 class HouseType1Object : public Object {
 	public:
 		HouseType1Object();
-		std::string getObjectName() { return "HouseObject"; }
+		std::string getObjectName() { return "HouseType1Object"; }
 };
 
 class HouseType2Object : public Object {
 	public:
 		HouseType2Object();
-		std::string getObjectName() { return "House2Object"; }
+		std::string getObjectName() { return "HouseType2Object"; }
 };
 
 class StoneObject : public Object {

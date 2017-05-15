@@ -23,8 +23,9 @@ SHADER_LIGHT_PREFIX = ./shaders/light
 SKYBOX_CUBE_TEXTURE_FILE_PREFIX = ./data/skybox/skybox
 
 # 1) Train:
-TRAIN_MODEL_PATH = ./data/models/train/train_enginecar.obj 
+TRAIN_MODEL_PATH = ./data/models/train/train_enginecar.obj
 TRAIN_SIZE = 0.3
+TRAIN_SPEED = 0.5
 
 # 2) Freightcar: 
 FREIGHTCAR_MODEL_PATH = ./data/models/freight/train_orecar.obj
@@ -51,14 +52,19 @@ DUMPSTER_2_MODEL_PATH = ./data/models/dumpster2/Dumpster.obj
 DUMPSTER_2_SIZE = 0.15
 
 # 8) House_1:
-HOUSE_1_MODEL_PATH = ./data/models/house/WoodHouse.obj
+HOUSE_1_MODEL_PATH = ./data/models/house1/WoodHouse.obj
 HOUSE_1_SIZE = 0.4
 
 # 9) House_2:
 HOUSE_2_MODEL_PATH = ./data/models/house2/Stable.obj
 HOUSE_2_SIZE = 0.3
 
-# 10) Track:
+# 10) Helicopter:
+HELICOPTER_MODEL_PATH = ./data/models/helicopter/Mi28.obj 
+HELICOPTER_SIZE = 0.5
+HELICOPTER_SPEED = 0.7
+
+# 11) Track:
 TRACK_MODEL_PATH = ./data/models/track/track.obj
 TRACK_SIZE = 0.5
 #positions of single track parts:
@@ -74,4 +80,4 @@ TRACK_SIZE = 0.5
 # other variables
 
 USE_LIGHT = true
-TRAIN_SPEED = 0.5
+

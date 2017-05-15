@@ -97,7 +97,7 @@ void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY) {
 }
 
 void timerCallback(int) {
-	//scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);	// update scene time
+	scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);	// update scene time
 	//float timeDelta = scene->sceneState.elapsedTime - scene->camera->currentTime;
 
 	if (scene->sceneState.keyMap[KEY_RIGHT_ARROW] == true) {

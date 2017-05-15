@@ -54,7 +54,10 @@ void Scene::restart() {
 	}
 	sceneState.setKeysStateUnpressed();
 	initModels();
+	
 	train->setTime(sceneState.elapsedTime);
+	trainFlatcar->setTime(sceneState.elapsedTime);
+	helicopter->setTime(sceneState.elapsedTime);
 }
 
 void Scene::show() {
@@ -73,6 +76,7 @@ void Scene::show() {
 	drawSkybox();
 	drawMesh(train->geometry.get(), train->modelMatrix);
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
+	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
 	drawMesh(factory->geometry.get(), factory->modelMatrix);
 	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
@@ -107,9 +111,6 @@ void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 
 void Scene::drawSkybox() {
 	glUseProgram(skyboxProgram.program);
-	// compose transformations
-
-	glm::mat4 matrix = camera->projection * camera->view;
 	// crate view rotation matrix by using view matrix with cleared translation
 	glm::mat4 viewRotation = camera->view;
 	viewRotation[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -127,8 +128,9 @@ void Scene::drawSkybox() {
 
 void Scene::updateObjects(float elapsedTime) {
 	camera->currentTime = elapsedTime;
-	train->update(elapsedTime);
-	trainFlatcar->update(elapsedTime);
+//	train->update(elapsedTime);
+//	trainFlatcar->update(elapsedTime);
+	helicopter->update(elapsedTime);
 }
 
 void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHeight) {
@@ -140,8 +142,11 @@ void Scene::initModels() {
 	train = new TrainObject;
 	train->geometry = ObjectMeshGeometry::loadMultiMesh(config->TRAIN_MODEL_PATH, this->lightProgram);
 	
-	trainFlatcar = new FlatCarObject;
+	trainFlatcar = new FlatcarObject;
 	trainFlatcar->geometry = ObjectMeshGeometry::loadMultiMesh(config->FLATCAR_MODEL_PATH, this->lightProgram);
+
+	helicopter = new HelicopterObject;
+	helicopter->geometry = ObjectMeshGeometry::loadMultiMesh(config->HELICOPTER_MODEL_PATH, this->lightProgram);
 	
 	skybox = new SkyBoxObject;
 	skybox->geometry = new SkyBoxGeometry(skyboxProgram);
@@ -210,6 +215,7 @@ Scene::~Scene() {
 void Scene::deleteModels() {
 	if (train != nullptr) { delete train; train = nullptr; }
 	if (trainFlatcar != nullptr) { delete trainFlatcar; trainFlatcar = nullptr; }
+	if (helicopter != nullptr) { delete helicopter; helicopter = nullptr; }
 	if (factory != nullptr) { delete factory; factory = nullptr; }
 	if (dumpsterType1 != nullptr) { delete dumpsterType1; dumpsterType1 = nullptr; }
 	if (dumpsterType2 != nullptr) { delete dumpsterType2; dumpsterType2 = nullptr; }

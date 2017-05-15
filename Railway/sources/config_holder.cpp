@@ -44,8 +44,13 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 
 	SKYBOX_CUBE_TEXTURE_FILES = createSkyboxTextureFilenames(configValues["SKYBOX_CUBE_TEXTURE_FILE_PREFIX"]);
 
+	HELICOPTER_MODEL_PATH = configValues["HELICOPTER_MODEL_PATH"];
+	HELICOPTER_SIZE = stof(configValues["HELICOPTER_SIZE"]);
+	HELICOPTER_SPEED = stof(configValues["HELICOPTER_SPEED"]);
+
 	TRAIN_MODEL_PATH = configValues["TRAIN_MODEL_PATH"];
 	TRAIN_SIZE = stof(configValues["TRAIN_SIZE"]);
+	TRAIN_SPEED = stof(configValues["TRAIN_SPEED"]);
 
 	FREIGHTCAR_MODEL_PATH = configValues["FREIGHTCAR_MODEL_PATH"];
 	FREIGHTCAR_SIZE = stof(configValues["FREIGHTCAR_SIZE"]);
@@ -75,7 +80,6 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 	WINDMILL_SIZE = stof(configValues["WINDMILL_SIZE"]);
 
 	USE_LIGHT = stringToBool(configValues["USE_LIGHT"]);
-	TRAIN_SPEED = stof(configValues["TRAIN_SPEED"]);
 
 	fs.close();
 }

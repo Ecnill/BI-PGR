@@ -25,7 +25,6 @@ class ConfigHolder {
 
 		// program variables
 		bool USE_LIGHT;
-		float TRAIN_SPEED;
 
 		// shaders
 		pair<string, string> SHADER_SKYBOX;
@@ -33,6 +32,7 @@ class ConfigHolder {
 		
 		// objects
 		float TRAIN_SIZE;
+		float TRAIN_SPEED;
 		string TRAIN_MODEL_PATH;
 
 		float FLATCAR_SIZE;
@@ -45,6 +45,10 @@ class ConfigHolder {
 		string TRACK_MODEL_PATH;
 		vector<glm::vec3> TRACK_PART_POSITIONS;
 
+		float HELICOPTER_SIZE;
+		float HELICOPTER_SPEED;
+		string HELICOPTER_MODEL_PATH;
+			
 		float FACTORY_SIZE;
 		string FACTORY_MODEL_PATH;
 
