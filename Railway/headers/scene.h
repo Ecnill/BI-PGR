@@ -4,9 +4,7 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
-#include "config_holder.h"
 #include "callbacks.h"
-#include "pgr.h"
 #include "shader_program.h"
 #include "objects.h"
 #include "camera.h"
@@ -27,6 +25,10 @@ class Scene {
 		void updateObjects(float elapsedTime);
 		void setWindowSize(const unsigned int newWidth, const unsigned int newHeight);
 
+		// interactivity 
+		void fallDumpster();
+		void goTrain();
+
 		SceneState sceneState;
 		Camera *camera;
 
@@ -43,8 +45,8 @@ class Scene {
 
 		DynamicObject *train;
 		DynamicObject *helicopter;
-		DynamicObject *trainFlatcar;
 
+		Object *trainFlatcar;
 		Object *factory;
 		Object *dumpsterType1;
 		Object *dumpsterType2;
@@ -62,7 +64,7 @@ class Scene {
 		bool useLight;
 
 		// draw methods
-		void drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix);
+		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
 
 		// utils, config

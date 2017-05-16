@@ -25,7 +25,7 @@ SKYBOX_CUBE_TEXTURE_FILE_PREFIX = ./data/skybox/skybox
 # 1) Train:
 TRAIN_MODEL_PATH = ./data/models/train/train_enginecar.obj
 TRAIN_SIZE = 0.3
-TRAIN_SPEED = 0.5
+TRAIN_SPEED = 0.2
 
 # 2) Freightcar: 
 FREIGHTCAR_MODEL_PATH = ./data/models/freight/train_orecar.obj
@@ -62,18 +62,18 @@ HOUSE_2_SIZE = 0.3
 # 10) Helicopter:
 HELICOPTER_MODEL_PATH = ./data/models/helicopter/Mi28.obj 
 HELICOPTER_SIZE = 0.5
-HELICOPTER_SPEED = 0.7
+HELICOPTER_SPEED = 1.5
 
 # 11) Track:
 TRACK_MODEL_PATH = ./data/models/track/track.obj
 TRACK_SIZE = 0.5
 #positions of single track parts:
+(0.3, 0.9, 0.0)
 (0.7, 0.0, 0.0)
 (1.135, -0.9, 0.0)
 (1.55, -1.8, 0.0)
 (1.95, -2.7, 0.0)
 (2.0, -3.4, 0.0)
-(0.3, 0.9, 0.0)
 
 ###############################################################
 

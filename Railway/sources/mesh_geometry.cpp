@@ -12,7 +12,7 @@ MeshGeometry::~MeshGeometry() {
 	glDeleteVertexArrays(1, &(vertexArrayObject));
 	glDeleteBuffers(1, &(elementBufferObject));
 	glDeleteBuffers(1, &(vertexBufferObject));
-	for (SubMeshGeometry *sub : subMeshVector) {
+	for (auto sub : subMeshVector) {
 		delete sub;
 	}
 }
@@ -20,7 +20,6 @@ MeshGeometry::~MeshGeometry() {
 shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &fileName, LightShaderProgram &shader) {
 	Assimp::Importer importer;
 	shared_ptr<ObjectMeshGeometry> geometry = nullptr;
-
 	importer.SetPropertyInteger(AI_CONFIG_PP_PTV_NORMALIZE, 1); // Unitize object in size (scale the model to fit into (-1..1)^3)
 																// Load asset from the file - you can play with various processing steps
 	const aiScene *scn = importer.ReadFile(fileName.c_str(), 0
@@ -40,9 +39,7 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 	std::cout << "Loaded " << scn->mNumMeshes << " meshes" << std::endl;
 
 	geometry = shared_ptr<ObjectMeshGeometry> (new ObjectMeshGeometry());
-
 	for (size_t i = 0; i < scn->mNumMeshes; ++i) {
-
 		// in this phase we know we have one mesh in our loaded scene, we can directly copy its data to opengl ...
 		const aiMesh * mesh = scn->mMeshes[i];
 		SubMeshGeometry *subMesh = new SubMeshGeometry;
@@ -56,13 +53,10 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 		// then store all normals
 		glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(float)*mesh->mNumVertices, 3 * sizeof(float)*mesh->mNumVertices, mesh->mNormals);
 
-		// just texture 0 for now
 		float *textureCoords = new float[2 * mesh->mNumVertices];  // 2 floats per vertex
 		float *currentTextureCoord = textureCoords;
-
 		// copy texture coordinates
 		aiVector3D vect;
-
 		if (mesh->HasTextureCoords(0)) {
 			for (unsigned int idx = 0; idx<mesh->mNumVertices; idx++) {
 				vect = (mesh->mTextureCoords[0])[idx];
@@ -115,9 +109,7 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 		glEnableVertexAttribArray(shader.texCoordLocation);
 		glVertexAttribPointer(shader.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)(6 * sizeof(float) * mesh->mNumVertices));
 		CHECK_GL_ERROR();
-
 		glBindVertexArray(0);
-
 		subMesh->numTriangles = mesh->mNumFaces;
 		geometry->subMeshVector.push_back(subMesh);
 	}
@@ -147,8 +139,7 @@ CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, con
 		glEnableVertexAttribArray(shader.normalLocation);
 		// normal of vertex starts after the color (interlaced array)
 		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	}
-	else {
+	} else {
 		glEnableVertexAttribArray(shader.colorLocation);
 		// color of vertex starts after the position (interlaced arrays)
 		glVertexAttribPointer(shader.colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -215,7 +206,6 @@ Material *ObjectMeshGeometry::getSingleMeshMaterial(const aiMaterial *mat, const
 SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glGenVertexArrays(1, &(vertexArrayObject));
 	glBindVertexArray(vertexArrayObject);
-
 	// buffer for far plane rendering
 	glGenBuffers(1, &(vertexBufferObject)); 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -224,24 +214,17 @@ SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glEnableVertexAttribArray(shaderProgram.screenCoordLocation);
 	glVertexAttribPointer(shaderProgram.screenCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-	//glBindVertexArray(0);
-	//glUseProgram(0);
-	CHECK_GL_ERROR();
-
 	numTriangles = 2;
 
 	glActiveTexture(GL_TEXTURE0);
-
 	glGenTextures(1, &(texture));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
-	
 	GLuint targets[] = {
 		GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
 		GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 		GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
-	CHECK_GL_ERROR();
 	auto skyboxFiles = ConfigHolder::getInstance()->SKYBOX_CUBE_TEXTURE_FILES;
 	for (size_t i = 0; i < skyboxFiles.size(); ++i) {
 		if (!pgr::loadTexImage2D(skyboxFiles[i], targets[i])) {
@@ -252,16 +235,41 @@ SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	}
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	CHECK_GL_ERROR();
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
 	// unbind the texture (just in case someone will mess up with texture calls later)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	CHECK_GL_ERROR();
 }
+
+//shared_ptr<ExplosionGeometry> ExplosionGeometry::createFromFileMesh(ShaderProgram shader, const string &textureName) {
+//
+//	shared_ptr<ExplosionGeometry> geometry (new MeshGeometry);
+//
+//	//std::string textName = EXPLOSION_TEXTURE_NAME; // TODO
+//
+//	geometry->
+//
+//	(geometry)->textureId = pgr::createTexture(textureName);
+//
+//	glGenVertexArrays(1, &((*geometry)->vertexArrayObject));
+//	glBindVertexArray((*geometry)->vertexArrayObject);
+//
+//	glGenBuffers(1, &((*geometry)->vertexBufferObject));
+//	glBindBuffer(GL_ARRAY_BUFFER, (*geometry)->vertexBufferObject);
+//	glBufferData(GL_ARRAY_BUFFER, sizeof(explosionVertexData), explosionVertexData, GL_STATIC_DRAW);
+//
+//	glEnableVertexAttribArray(explosionShader.posLocation);
+//	// vertices of triangles - start at the beginning of the array (interlaced array)
+//	glVertexAttribPointer(explosionShader.posLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+//
+//	glEnableVertexAttribArray(explosionShader.texCoordLocation);
+//	// texture coordinates are placed just after the position of each vertex (interlaced array)
+//	glVertexAttribPointer(explosionShader.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+//
+//	glBindVertexArray(0);
+//
+//	(*geometry)->numTriangles = explosionNumQuadVertices;
+//}

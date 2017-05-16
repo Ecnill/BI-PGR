@@ -7,10 +7,10 @@
 #include "objects.h"
 using namespace glm;
 
-#define CAMERA_NORMAL_SPEED				0.75f 
-#define CAMERA_ANGLE_X					0.5f
-#define CAMERA_ANGLE_Y					0.0f
-#define CAMERA_POSITION					vec3(-1.0f, 0.05f, 0.5f)
+#define CAMERA_NORMAL_SPEED	0.75f 
+#define CAMERA_ANGLE_X		0.5f
+#define CAMERA_ANGLE_Y		0.0f
+#define CAMERA_POSITION		vec3(-1.0f, 0.05f, 0.5f)
 
 #define CAMERA_ELEVATION_MAX			45.0f
 
@@ -46,8 +46,11 @@ struct Camera {
 	void goRight();
 	void goForward(float timeDelta);
 	void goBackwards(float timeDelta);
+	void lookAtMouseClick(int x, int y);
 	void lookUp();
 	void lookDown();
+
+	void setPosition(vec3 position);
 
 	void setTime(float startTime);
 	void setViewMatrix();

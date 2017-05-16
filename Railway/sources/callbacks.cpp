@@ -66,34 +66,38 @@ void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY) {
 	default:
 		break; // printf("Unrecognized special key pressed\n");
 	}
+
 }
 
 void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY) {
+
+	scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);	// update scene time
+	float timeDelta = scene->sceneState.elapsedTime - scene->camera->currentTime;
 	switch (specKeyPressed) {
-	case GLUT_KEY_F1:
-		scene->sceneState.keyMap[KEY_F1] = false;
-		break;
-	case GLUT_KEY_F2:
-		scene->sceneState.keyMap[KEY_F2] = false;
-		break;
-	case GLUT_KEY_F3:
-		scene->sceneState.keyMap[KEY_F3] = false;
-		break;
-	case GLUT_KEY_RIGHT:
-		scene->sceneState.keyMap[KEY_RIGHT_ARROW] = false;
-		break;
-	case GLUT_KEY_LEFT:
-		scene->sceneState.keyMap[KEY_LEFT_ARROW] = false;
-		break;
-	case GLUT_KEY_UP:
-		scene->sceneState.keyMap[KEY_UP_ARROW] = false;
-		break;
-	case GLUT_KEY_DOWN:
-		scene->sceneState.keyMap[KEY_DOWN_ARROW] = false;
-		break;
-	default:
-		break; // printf("Unrecognized special key released\n");
-	}
+		case GLUT_KEY_F1:
+			scene->sceneState.keyMap[KEY_F1] = false;
+			break;
+		case GLUT_KEY_F2:
+			scene->sceneState.keyMap[KEY_F2] = false;
+			break;
+		case GLUT_KEY_F3:
+			scene->sceneState.keyMap[KEY_F3] = false;
+			break;
+		case GLUT_KEY_RIGHT:
+			scene->sceneState.keyMap[KEY_RIGHT_ARROW] = false;
+			break;
+		case GLUT_KEY_LEFT:
+			scene->sceneState.keyMap[KEY_LEFT_ARROW] = false;
+			break;
+		case GLUT_KEY_UP:
+			scene->camera->goForward(timeDelta);
+			break;
+		case GLUT_KEY_DOWN:
+			scene->sceneState.keyMap[KEY_DOWN_ARROW] = false;
+			break;
+		default:
+			break; // printf("Unrecognized special key released\n");
+		}
 }
 
 void timerCallback(int) {
@@ -161,6 +165,28 @@ void mouseWheelCallback(int button, int dir, int x, int y) {
 	}
 }
 
+void onMouseButton(int button, int state, int x, int y) {
+	if ((button == GLUT_LEFT_BUTTON) && (button == GLUT_DOWN)) {
+		unsigned char id = 0;
+		glReadPixels(x, config->WINDOW_HEIGHT - 1 - y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, &id);
+
+		switch (id) {
+			case 0:
+				
+				break;
+			case 1:
+				scene->goTrain();
+				break;
+			case 2:
+			
+				break;
+			case 3:
+				scene->fallDumpster();
+				break;
+			}
+	}
+}
+
 int buildPopupMenu(void) {
 	int menu = glutCreateMenu(selectFromMenuCallback);
 	glutAddMenuEntry("Turn on/off light", MENU_LIGHTING);
@@ -196,9 +222,9 @@ void manageCallbacks() {
 	glutSpecialUpFunc(specialKeyboardUpCallback); // key released
 
 	buildPopupMenu();
-	
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
+	glutMouseFunc(onMouseButton);
 	glutMouseWheelFunc(mouseWheelCallback);		// mouse scroll wheel
 
 	glutTimerFunc(TICK, timerCallback, 0);

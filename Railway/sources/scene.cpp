@@ -27,7 +27,6 @@ void Scene::start() {
 	glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glPointSize(5.0f);
 
 	useLight = config->USE_LIGHT;
 	initShaders();
@@ -56,7 +55,6 @@ void Scene::restart() {
 	initModels();
 	
 	train->setTime(sceneState.elapsedTime);
-	trainFlatcar->setTime(sceneState.elapsedTime);
 	helicopter->setTime(sceneState.elapsedTime);
 }
 
@@ -64,7 +62,8 @@ void Scene::show() {
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
 	if (camera->actualState == camera->FREE) {
 		camera->dynamicView();
-	} else if (camera->actualState == camera->STATIC1) {
+	}
+	else if (camera->actualState == camera->STATIC1) {
 		camera->staticView1();
 	} else if (camera->actualState == camera->STATIC2) {
 		camera->staticView2();
@@ -72,20 +71,29 @@ void Scene::show() {
 	camera->setViewMatrix();
 	camera->setProjectionMatrix(sceneState.windowWidth, sceneState.windowHeight);
 	sceneState.setWindowTitleTime(config->WINDOW_TITLE, glutGet(GLUT_ELAPSED_TIME));
-	
+
 	drawSkybox();
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 0);
 	drawMesh(train->geometry.get(), train->modelMatrix);
-	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
-	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
-	drawMesh(factory->geometry.get(), factory->modelMatrix);
-	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
-	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
-	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
-	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
 	for (auto car : trainFreightcars) {
+		glStencilFunc(GL_ALWAYS, 2, 0);
 		drawMesh(car->geometry.get(), car->modelMatrix);
 	}
+	glStencilFunc(GL_ALWAYS, 3, 0);
+	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
+	glDisable(GL_STENCIL_TEST);
+	
+	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
+	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
+	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
+	drawMesh(factory->geometry.get(), factory->modelMatrix);
+	
+	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
+	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
 	for (auto mill : windmills) {
 		drawMesh(mill->geometry.get(), mill->modelMatrix);
@@ -128,14 +136,22 @@ void Scene::drawSkybox() {
 
 void Scene::updateObjects(float elapsedTime) {
 	camera->currentTime = elapsedTime;
-//	train->update(elapsedTime);
-//	trainFlatcar->update(elapsedTime);
+	//train->update(elapsedTime);
 	helicopter->update(elapsedTime);
+	((DumpsterType2Object*)dumpsterType2)->checkFall();
 }
 
 void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHeight) {
 	sceneState.windowHeight = newHeight;
 	sceneState.windowWidth = newWidth;
+}
+
+void Scene::fallDumpster() {
+	((DumpsterType2Object*)dumpsterType2)->isFallen = true;
+}
+
+void Scene::goTrain() {
+
 }
 
 void Scene::initModels() {
@@ -194,7 +210,7 @@ void Scene::initModels() {
 		track.push_back(trackPart);
 	} 
 
-//	stone = new StoneObject();
+	//stone = new StoneObject();
 //	stone->geometry = CodeMeshGeometry::loadCodeMesh(this->lightProgram, stoneTriangles, stoneVertices);
 }
 

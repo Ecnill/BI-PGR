@@ -19,11 +19,10 @@ using namespace glm;
 #define HOUSE_2_POSITION	vec3(-1.0f, -0.3f, 0.0f)
 
 #define HELICOPTER_CURVE_SIZE 50
-#define TRAIN_CURVE_SIZE	50
 
 #define STONE_SIZE			22.5f
 #define STONE_POSITION		vec3(-10.0f, 0.0f, 0.0f)
-
+//------------------------------------------------------------
 class Object {
 	public:
 		vec3 position;
@@ -39,105 +38,102 @@ class Object {
 		virtual std::string getObjectName() = 0;
 		void showObjectCreatedMessage();
 };
-
+//------------------------------------------------------------
 class DynamicObject : public Object {
 	public:
 		void setTime(float startTime);
-		void update(float elapsedTime);
-		virtual ~DynamicObject();
-
+		virtual void update(float elapsedTime) = 0;
+		
 	protected:
 		float startTime;
 		float currentTime;
 		float speed;
-		vec3 *curveData;
-		size_t curveSize;
 		vec3 startPosition;
-
-		virtual void initCurveData() = 0;
 };
-
+//------------------------------------------------------------
 class TrainObject : public DynamicObject {
 	public:
 		TrainObject();
+		void update(float elapsedTime);
 		std::string getObjectName() { return "TrainObject"; }
 		bool destroyed;
-	private:
-		void initCurveData();
-	
 };
-
+//------------------------------------------------------------
 class HelicopterObject : public DynamicObject {
 	public:
 		HelicopterObject();
+		~HelicopterObject();
+		void update(float elapsedTime);
 		std::string getObjectName() { return "HelicopterObject"; }
 	private:
 		void initCurveData();
-	
-};
 
-class FlatcarObject : public DynamicObject {
+		vec3 *curveData;
+		size_t curveSize;
+};
+//------------------------------------------------------------
+class FlatcarObject : public Object {
 	public:
 		FlatcarObject();
 		std::string getObjectName() { return "FlatCarObject"; }
-	private:
-		void initCurveData();
 };
-
+//------------------------------------------------------------
 class FreightcarObject : public Object {
 	public:
 		FreightcarObject(vec3 position);
 		std::string getObjectName() { return "FreightcarObject"; }
 };
-
+//------------------------------------------------------------
 class FactoryObject : public Object {
 	public:
 		FactoryObject();
 		std::string getObjectName() { return "FactoryObject"; }
 };
-
+//------------------------------------------------------------
 class TrackObject : public Object {
 	public:
 		TrackObject(vec3 position);
 		std::string getObjectName() { return "TrackObject"; }
 };
-
+//------------------------------------------------------------
 class WindmillObject : public Object {
 	public:
 		WindmillObject(vec3 position);
 		std::string getObjectName() { return "WindmillObject"; }
 };
-
+//------------------------------------------------------------
 class DumpsterType1Object : public Object {
 	public:
 		DumpsterType1Object();
 		std::string getObjectName() { return "DumpsterType1Object"; }
 };
-
+//------------------------------------------------------------
 class DumpsterType2Object : public Object {
 	public:
 		DumpsterType2Object();
 		std::string getObjectName() { return "DumpsterType2Object"; }
+		void checkFall();
+		bool isFallen;
 };
-
+//------------------------------------------------------------
 class HouseType1Object : public Object {
 	public:
 		HouseType1Object();
 		std::string getObjectName() { return "HouseType1Object"; }
 };
-
+//------------------------------------------------------------
 class HouseType2Object : public Object {
 	public:
 		HouseType2Object();
 		std::string getObjectName() { return "HouseType2Object"; }
 };
-
+//------------------------------------------------------------
 class StoneObject : public Object {
 	public:
 		StoneObject();
 		std::string getObjectName() { return "StoneObject"; }
 };
-
+//------------------------------------------------------------
 class SkyBoxObject : public Object {
 	public:
 		std::string getObjectName() { return "SkyBoxObject"; }

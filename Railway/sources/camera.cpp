@@ -7,10 +7,10 @@ Camera::Camera() {
 	position = CAMERA_POSITION;
 	direction = vec3(cos(radians(viewAngleX)), sin(radians(viewAngleX)), 0.0f);
 	actualState = FREE;
+}
 
-	std::cout << "position: (" << position.x << ", " << position.y << ", " << position.z << ")\n";
-	std::cout << "direction: (" << direction.x << ", " << direction.y << ", " << direction.z << ")\n";
-	std::cout << std::endl;
+void Camera::setPosition(vec3 position) {
+	this->position = position;
 }
 
 void Camera::staticView1() {
@@ -54,9 +54,7 @@ void Camera::lookUp() {
 	if (viewAngleY > 360.0f) {
 		viewAngleY -= 360.0f;
 	}
-	direction = normalize(vec3(cos(radians(viewAngleX)) * sin(radians(viewAngleY)),
-		sin(radians(viewAngleX)),
-		cos(radians(viewAngleX)) * cos(radians(viewAngleY))));
+	direction.z = viewAngleY/360;
 }
 
 void Camera::lookDown() {
@@ -64,16 +62,8 @@ void Camera::lookDown() {
 	if (viewAngleY < 360.0f) {
 		viewAngleY += 360.0f;
 	}
-	//std::cout << "position: (" << position.x << ", " << position.y << ", " << position.z << ")\n";
-	std::cout << "direction: (" << direction.x << ", " << direction.y << ", " << direction.z << ")\n";
-
-	direction = normalize(vec3(
-		cos(radians(viewAngleX)) * sin (radians(viewAngleY)),
-		cos(radians(viewAngleY)),
-		sin(radians(viewAngleY))
-	));
+	direction.z = viewAngleY / 360;
 }
-
 
 void Camera::goForward(float timeDelta) {
 	this->position = checkBorders(timeDelta, 1.0);
@@ -83,6 +73,25 @@ void Camera::goForward(float timeDelta) {
 void Camera::goBackwards(float timeDelta) {
 	this->position = checkBorders(timeDelta, -1.0);
 	this->direction = normalize(vec3(cos(radians(this->viewAngleX)), sin(radians(this->viewAngleX)), 0.0f));
+}
+
+void Camera::lookAtMouseClick(int x, int y) {
+	GLint viewport[4];					
+	GLdouble modelview[16];				
+	GLdouble projection[16];			
+	GLfloat winX, winY, winZ;			
+	GLdouble worldX, worldY, worldZ;	
+
+	//glGetDoublev(GL_MODELVIEW_MATRIX, modelview);		
+	//glGetDoublev(GL_PROJECTION_MATRIX, projection);		
+	glGetIntegerv(GL_VIEWPORT, viewport);				
+
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	winZ = 0;
+	//get the world coordinates from the screen coordinates
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &worldX, &worldY, &worldZ);
+	setPosition(vec3(worldX, worldY, worldZ));
 }
 
 void Camera::setProjectionMatrix(int windowWidth, int windowHeight) {

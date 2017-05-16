@@ -23,6 +23,8 @@ class ConfigHolder {
 		int WINDOW_HEIGHT;
 		string WINDOW_TITLE;
 
+		const float SCENE_DEPTH = 1.0;
+
 		// program variables
 		bool USE_LIGHT;
 

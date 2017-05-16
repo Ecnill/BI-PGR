@@ -16,6 +16,10 @@ struct SubMeshGeometry {
 		Material		*material;
 		GLuint			vertexArrayObject;
 		unsigned int	numTriangles;
+
+		~SubMeshGeometry() {
+			if (material != nullptr) { delete material; }
+		}
 };
 
 struct MeshGeometry {
@@ -50,6 +54,5 @@ class SkyBoxGeometry : public MeshGeometry {
 	private:
 		static constexpr float screenCoords[] = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f };
 };
-
 
 #endif // __MESH_GEOMETRY_H
