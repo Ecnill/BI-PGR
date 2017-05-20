@@ -1,4 +1,4 @@
-# Simple config file, please don't change names of properties.
+# Simple config file, please don't change names of properties and file paths.
 
 ###############################################################
 
@@ -81,3 +81,4 @@ TRACK_SIZE = 0.5
 
 USE_LIGHT = true
 
+CAMERA_SPEED = 0.75

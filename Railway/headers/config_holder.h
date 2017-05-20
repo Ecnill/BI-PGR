@@ -27,6 +27,7 @@ class ConfigHolder {
 
 		// program variables
 		bool USE_LIGHT;
+		float CAMERA_SPEED;
 
 		// shaders
 		pair<string, string> SHADER_SKYBOX;

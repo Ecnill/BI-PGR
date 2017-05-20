@@ -103,3 +103,11 @@ glm::vec3 evaluateClosedCurve_1stDerivative(glm::vec3 points[], const size_t cou
 	);
 	return result;
 }
+//**************************************************************************************************
+glm::vec3 interpolateShow(const glm::vec3 start, const glm::vec3 end, float alpha) {
+	return glm::vec3(
+		(float)(((start.x * (0.2 - 1)) + end.x) * alpha),
+		(float)(((start.y * (0.2 - 1)) + end.y) * alpha),
+		(float)(((start.z * (0.2 - 1)) + end.z) * alpha)
+	);
+}

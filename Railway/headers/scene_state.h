@@ -9,13 +9,12 @@
 //---------------------------------------------------------------------------------------
 #ifndef __SCENE_STATE_H
 #define __SCENE_STATE_H
-
 #include <string>
 #include <sstream>   
 #include <iomanip>
 #include "pgr.h"
 
-enum { KEY_LEFT_ARROW, KEY_RIGHT_ARROW, KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_SPACE, KEY_F1, KEY_F2, KEY_F3, KEYS_COUNT };
+enum { KEY_LEFT_ARROW, KEY_RIGHT_ARROW, KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_SPACE, KEY_F1, KEY_F2, KEY_F3, KEY_F4, KEYS_COUNT };
 
 struct SceneState {
 	

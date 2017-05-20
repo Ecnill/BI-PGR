@@ -13,7 +13,6 @@ bool Scene::init(const std::string &configFilePath) {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
 	glutInitWindowSize(config->WINDOW_WIDTH, config->WINDOW_HEIGHT);
 	glutCreateWindow(config->WINDOW_TITLE.data());
-
 	manageCallbacks();
 	// initialize GL, devil etc.
 	return pgr::initialize(pgr::OGL_VER_MAJOR, pgr::OGL_VER_MINOR);
@@ -22,7 +21,6 @@ bool Scene::init(const std::string &configFilePath) {
 void Scene::start() {
 	// initialize random seed
 	srand((unsigned int)time(NULL));
-
 	// initialize OpenGL
 	glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
 	glEnable(GL_CULL_FACE);
@@ -45,8 +43,8 @@ void Scene::restart() {
 	deleteModels();
 	if (camera != nullptr) delete camera;
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
-	camera = new Camera;
-	camera->setTime(sceneState.elapsedTime);
+	camera = new Camera(config->CAMERA_SPEED);
+	camera->currentTime = sceneState.elapsedTime;
 	if (sceneState.freeCameraMode == true) {
 		sceneState.freeCameraMode = false;
 		glutPassiveMotionFunc(NULL);
@@ -62,11 +60,12 @@ void Scene::show() {
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
 	if (camera->actualState == camera->FREE) {
 		camera->dynamicView();
-	}
-	else if (camera->actualState == camera->STATIC1) {
-		camera->staticView1();
-	} else if (camera->actualState == camera->STATIC2) {
-		camera->staticView2();
+	} else if (camera->actualState == camera->TOP) {
+		camera->staticFromTopView();
+	} else if (camera->actualState == camera->AT_TRAIN) {
+		camera->staticAtTrainView();
+	} else if (camera->actualState == camera->FROM_HELICOPTER) {
+		camera->helicopterView(((HelicopterObject*)helicopter), sceneState.elapsedTime);
 	}
 	camera->setViewMatrix();
 	camera->setProjectionMatrix(sceneState.windowWidth, sceneState.windowHeight);
@@ -119,12 +118,7 @@ void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 
 void Scene::drawSkybox() {
 	glUseProgram(skyboxProgram.program);
-	// crate view rotation matrix by using view matrix with cleared translation
-	glm::mat4 viewRotation = camera->view;
-	viewRotation[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	// vertex shader will translate screen space coordinates (NDC) using inverse PV matrix
-	glm::mat4 inversePVmatrix = glm::inverse(camera->projection * viewRotation);
-	glUniformMatrix4fv(skyboxProgram.inversePVmatrixLocation, 1, GL_FALSE, glm::value_ptr(inversePVmatrix));
+	glUniformMatrix4fv(skyboxProgram.inversePVmatrixLocation, 1, GL_FALSE, glm::value_ptr(skybox->getInversePVmatrix(camera->view, camera->projection)));
 
 	glUniform1i(skyboxProgram.skyboxSamplerLocation, 0);
 	// draw "skybox" rendering 2 triangles covering the far plane
@@ -136,7 +130,6 @@ void Scene::drawSkybox() {
 
 void Scene::updateObjects(float elapsedTime) {
 	camera->currentTime = elapsedTime;
-	//train->update(elapsedTime);
 	helicopter->update(elapsedTime);
 	((DumpsterType2Object*)dumpsterType2)->checkFall();
 }

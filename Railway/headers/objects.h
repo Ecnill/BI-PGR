@@ -1,6 +1,7 @@
 #ifndef __OBJECTS_H
 #define __OBJECTS_H
 #include <memory>
+#include <vector>
 #include "pgr.h"
 #include "material.h"
 #include "mesh_geometry.h"
@@ -18,7 +19,7 @@ using namespace glm;
 #define HOUSE_1_POSITION	vec3(-1.0f, 0.7f, 0.0f)
 #define HOUSE_2_POSITION	vec3(-1.0f, -0.3f, 0.0f)
 
-#define HELICOPTER_CURVE_SIZE 50
+#define HELICOPTER_CURVE_SIZE 100
 
 #define STONE_SIZE			22.5f
 #define STONE_POSITION		vec3(-10.0f, 0.0f, 0.0f)
@@ -31,23 +32,23 @@ class Object {
 		std::shared_ptr<MeshGeometry> geometry;
 
 	protected:
-		float size;
-
-		ConfigHolder *config = ConfigHolder::getInstance();
-
 		virtual std::string getObjectName() = 0;
 		void showObjectCreatedMessage();
+
+		ConfigHolder *config = ConfigHolder::getInstance();
+		float size;
 };
 //------------------------------------------------------------
 class DynamicObject : public Object {
 	public:
 		void setTime(float startTime);
 		virtual void update(float elapsedTime) = 0;
+
+		float speed;
+		float currentTime;
+		float startTime;
 		
 	protected:
-		float startTime;
-		float currentTime;
-		float speed;
 		vec3 startPosition;
 };
 //------------------------------------------------------------
@@ -56,21 +57,21 @@ class TrainObject : public DynamicObject {
 		TrainObject();
 		void update(float elapsedTime);
 		std::string getObjectName() { return "TrainObject"; }
+
 		bool destroyed;
 };
 //------------------------------------------------------------
 class HelicopterObject : public DynamicObject {
 	public:
 		HelicopterObject();
-		~HelicopterObject();
 		void update(float elapsedTime);
 		std::string getObjectName() { return "HelicopterObject"; }
+		std::vector<vec3> curveData;
+
 	private:
 		void initCurveData();
-
-		vec3 *curveData;
-		size_t curveSize;
 };
+		
 //------------------------------------------------------------
 class FlatcarObject : public Object {
 	public:
@@ -138,6 +139,8 @@ class SkyBoxObject : public Object {
 	public:
 		std::string getObjectName() { return "SkyBoxObject"; }
 		SkyBoxGeometry *geometry;
+		mat4 getInversePVmatrix(mat4 view, mat4 projection);
+		
 };
 
 #endif // __OBJECTS_H

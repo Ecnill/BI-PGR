@@ -15,6 +15,8 @@
 /// Checks whether vector is zero-length or not.
 bool isVectorNull(glm::vec3 &vect);
 
+glm::vec3 interpolateShow(const glm::vec3 start, const glm::vec3 end, float alpha);
+
 //**************************************************************************************************
 /// Align (rotate and move) current coordinate system to given parameters.
 /**
@@ -178,5 +180,7 @@ void testCurve(CurveSegmentEvaluator evaluator, CurveSegmentEvaluator_1stDerivat
 		printf("Spline segment 1st derivative is INVALID\n");
 	}
 }
+
+
 
 #endif // __SPLINE_H

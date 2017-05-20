@@ -1,27 +1,22 @@
 //---------------------------------------------------------------------------------------
 /**
 * \file       callbacks.h
-* \author     Julia Ostrokomorets 
+* \author     Julia Ostrokomorets
 * \date       May 2017
-* \brief      All program callbacks for working with display, keyboard, mouse, etc. 
+* \brief      All program callbacks for working with display, keyboard, mouse, etc.
 *
 */
 //---------------------------------------------------------------------------------------
 #ifndef __CALLBACKS_H
 #define __CALLBACKS_H
-//#include <windows.h>
-//#include <GL/gl.h>
 #include "pgr.h"
 #include "config_holder.h"
 #include "scene.h"
-
 using namespace glm;
 
-#define TICK 33
+#define REFRESH_INTERVAL 33
 
-enum {
-	MENU_LIGHTING = 1, MENU_EXIT
-};
+enum { MENU_LIGHTING = 1, MENU_EXIT };
 
 void manageCallbacks();		// calls all callbacks except finalize
 

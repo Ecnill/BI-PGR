@@ -45,26 +45,20 @@ HelicopterObject::HelicopterObject() {
 void HelicopterObject::update(float elapsedTime) {
 	currentTime = elapsedTime;
 	float curveParamT = speed * (currentTime - startTime);
-	position = startPosition + evaluateClosedCurve(curveData, curveSize, curveParamT);
-	direction = normalize(evaluateClosedCurve_1stDerivative(curveData, curveSize, curveParamT));
+	position = startPosition + evaluateClosedCurve(curveData.data(), curveData.size(), curveParamT);
+	direction = normalize(evaluateClosedCurve_1stDerivative(curveData.data(), curveData.size(), curveParamT));
 	modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
 void HelicopterObject::initCurveData() {
-	curveSize = HELICOPTER_CURVE_SIZE;
-	curveData = new vec3[curveSize + 10];
-	for (int i = 0; i < curveSize + 10; ++i) {
-		curveData[i] = vec3(
+	for (int i = 0; i < HELICOPTER_CURVE_SIZE + 10; ++i) {
+		curveData.push_back(vec3(
 			(float)(2.0 * (rand() / (double)RAND_MAX) - 1.0),
 			(float)(2.0 * (rand() / (double)RAND_MAX) - 1.0),
-			0.0f
+			0.0f)
 		);
 	}
-}
-
-HelicopterObject::~HelicopterObject() {
-	delete curveData;
 }
 //------------------------------------------------------------
 FlatcarObject::FlatcarObject() {
@@ -194,4 +188,12 @@ StoneObject::StoneObject() {
 	modelMatrix = translate(glm::mat4(1.0f), position);
 	modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
 	modelMatrix = scale(modelMatrix, vec3(size));
+}
+
+mat4 SkyBoxObject::getInversePVmatrix(mat4 view, mat4 projection) {
+	// crate view rotation matrix by using view matrix with cleared translation
+	glm::mat4 viewRotation = view;
+	viewRotation[3] = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	// vertex shader will translate screen space coordinates (NDC) using inverse PV matrix
+	return inverse(projection * viewRotation);
 }

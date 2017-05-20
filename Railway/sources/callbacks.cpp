@@ -42,35 +42,37 @@ void keyboardUpCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 
 void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY) {
 	switch (specKeyPressed) {
-	case GLUT_KEY_F1:
-		scene->sceneState.keyMap[KEY_F1] = true;
-		break;
-	case GLUT_KEY_F2:
-		scene->sceneState.keyMap[KEY_F2] = true;
-		break;
-	case GLUT_KEY_F3:
-		scene->sceneState.keyMap[KEY_F3] = true;
-		break;
-	case GLUT_KEY_RIGHT:
-		scene->sceneState.keyMap[KEY_RIGHT_ARROW] = true;
-		break;
-	case GLUT_KEY_LEFT:
-		scene->sceneState.keyMap[KEY_LEFT_ARROW] = true;
-		break;
-	case GLUT_KEY_UP:
-		scene->sceneState.keyMap[KEY_UP_ARROW] = true;
-		break;
-	case GLUT_KEY_DOWN:
-		scene->sceneState.keyMap[KEY_DOWN_ARROW] = true;
-		break;
-	default:
-		break; // printf("Unrecognized special key pressed\n");
-	}
-
+		case GLUT_KEY_F1:
+			scene->sceneState.keyMap[KEY_F1] = true;
+			break;
+		case GLUT_KEY_F2:
+			scene->sceneState.keyMap[KEY_F2] = true;
+			break;
+		case GLUT_KEY_F3:
+			scene->sceneState.keyMap[KEY_F3] = true;
+			break;
+		case GLUT_KEY_F4:
+			scene->sceneState.keyMap[KEY_F4] = true;
+			break;
+		case GLUT_KEY_RIGHT:
+			scene->sceneState.keyMap[KEY_RIGHT_ARROW] = true;
+			break;
+		case GLUT_KEY_LEFT:
+			scene->sceneState.keyMap[KEY_LEFT_ARROW] = true;
+			break;
+		case GLUT_KEY_UP:
+			scene->sceneState.keyMap[KEY_UP_ARROW] = true;
+			break;
+		case GLUT_KEY_DOWN:
+			scene->sceneState.keyMap[KEY_DOWN_ARROW] = true;
+			break;
+		default:
+		//	std::cout << "Unrecognized special key pressed." << std::endl;
+			break; 
+		}
 }
 
 void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY) {
-
 	scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);	// update scene time
 	float timeDelta = scene->sceneState.elapsedTime - scene->camera->currentTime;
 	switch (specKeyPressed) {
@@ -83,6 +85,8 @@ void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY) {
 		case GLUT_KEY_F3:
 			scene->sceneState.keyMap[KEY_F3] = false;
 			break;
+		case GLUT_KEY_F4:
+			scene->sceneState.keyMap[KEY_F4] = false; 
 		case GLUT_KEY_RIGHT:
 			scene->sceneState.keyMap[KEY_RIGHT_ARROW] = false;
 			break;
@@ -90,20 +94,20 @@ void specialKeyboardUpCallback(int specKeyPressed, int mouseX, int mouseY) {
 			scene->sceneState.keyMap[KEY_LEFT_ARROW] = false;
 			break;
 		case GLUT_KEY_UP:
-			scene->camera->goForward(timeDelta);
+			scene->sceneState.keyMap[KEY_UP_ARROW] = false;
 			break;
 		case GLUT_KEY_DOWN:
 			scene->sceneState.keyMap[KEY_DOWN_ARROW] = false;
 			break;
 		default:
-			break; // printf("Unrecognized special key released\n");
+		//	std::cout << "Unrecognized special key released." << std::endl;
+			break;
 		}
 }
 
 void timerCallback(int) {
-	scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);	// update scene time
-	//float timeDelta = scene->sceneState.elapsedTime - scene->camera->currentTime;
-
+	scene->sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
+	float timeDelta = scene->sceneState.elapsedTime - scene->camera->currentTime;
 	if (scene->sceneState.keyMap[KEY_RIGHT_ARROW] == true) {
 		scene->camera->goRight();
 	}
@@ -117,11 +121,11 @@ void timerCallback(int) {
 		scene->camera->lookDown();
 	}
 	if (scene->sceneState.keyMap[KEY_F1] == true) {
-		scene->camera->actualState = scene->camera->STATIC1;
+		scene->camera->actualState = scene->camera->TOP;
 		glutPassiveMotionFunc(NULL);
 	}
 	if (scene->sceneState.keyMap[KEY_F2] == true) {
-		scene->camera->actualState = scene->camera->STATIC2;
+		scene->camera->actualState = scene->camera->AT_TRAIN;
 		glutPassiveMotionFunc(NULL);
 	}
 	if (scene->sceneState.keyMap[KEY_F3] == true) {
@@ -129,8 +133,22 @@ void timerCallback(int) {
 		glutPassiveMotionFunc(passiveMouseMotionCallback);
 		glutWarpPointer(scene->sceneState.windowWidth / 2, scene->sceneState.windowHeight / 2);
 	}
+	/*
+	sceneObjects.Camera->style = sceneObjects.Camera->FR;
+		if (sceneObjects.Camera->style != sceneObjects.Camera->FREELOOK) { // misto false bylo true
+			glutPassiveMotionFunc(passiveMouseMotionCallback);
+			glutWarpPointer(sceneState.windowWidth / 2, sceneState.windowHeight / 2);
+		}
+		else {
+			glutPassiveMotionFunc(NULL);
+		}
+	*/
+	if (scene->sceneState.keyMap[KEY_F4] == true) {
+		scene->camera->actualState = scene->camera->FROM_HELICOPTER;
+		glutPassiveMotionFunc(NULL);
+	}
 	scene->updateObjects(scene->sceneState.elapsedTime);
-	glutTimerFunc(TICK, timerCallback, 0);
+	glutTimerFunc(REFRESH_INTERVAL, timerCallback, 0);
 	glutPostRedisplay();
 }
 
@@ -169,7 +187,6 @@ void onMouseButton(int button, int state, int x, int y) {
 	if ((button == GLUT_LEFT_BUTTON) && (button == GLUT_DOWN)) {
 		unsigned char id = 0;
 		glReadPixels(x, config->WINDOW_HEIGHT - 1 - y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, &id);
-
 		switch (id) {
 			case 0:
 				
@@ -218,14 +235,14 @@ void manageCallbacks() {
 	// register callbacks for keyboard
 	glutKeyboardFunc(keyboardCallback);
 	glutKeyboardUpFunc(keyboardUpCallback);
-	glutSpecialFunc(specialKeyboardCallback);     // key pressed
-	glutSpecialUpFunc(specialKeyboardUpCallback); // key released
+	glutSpecialFunc(specialKeyboardCallback);    
+	glutSpecialUpFunc(specialKeyboardUpCallback); 
 
 	buildPopupMenu();
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 	glutMouseFunc(onMouseButton);
-	glutMouseWheelFunc(mouseWheelCallback);		// mouse scroll wheel
+	glutMouseWheelFunc(mouseWheelCallback);		
 
-	glutTimerFunc(TICK, timerCallback, 0);
+	glutTimerFunc(REFRESH_INTERVAL, timerCallback, 0);
 }

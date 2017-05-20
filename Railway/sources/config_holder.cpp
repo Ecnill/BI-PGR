@@ -35,6 +35,7 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 			}
 		}
 	}
+
 	WINDOW_WIDTH = atoi(configValues["WINDOW_WIDTH"].c_str());
 	WINDOW_HEIGHT = atoi(configValues["WINDOW_HEIGHT"].c_str());
 	WINDOW_TITLE = configValues["WINDOW_TITLE"];
@@ -80,6 +81,7 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 	WINDMILL_SIZE = stof(configValues["WINDMILL_SIZE"]);
 
 	USE_LIGHT = stringToBool(configValues["USE_LIGHT"]);
+	CAMERA_SPEED = stof(configValues["CAMERA_SPEED"]);
 
 	fs.close();
 }
