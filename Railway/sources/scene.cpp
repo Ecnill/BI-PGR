@@ -25,8 +25,8 @@ void Scene::start() {
 	glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-
 	useLight = config->USE_LIGHT;
+	isFire = false;
 	initShaders();
 	restart();
 }
@@ -34,12 +34,12 @@ void Scene::start() {
 void Scene::initShaders() {
 	lightProgram.init(useLight, config->SHADER_LIGHT.first, config->SHADER_LIGHT.second);
 	skyboxProgram.init(config->SHADER_SKYBOX.first, config->SHADER_SKYBOX.second);
+	explosionProgram.init(isFire, config->SHADER_EXPLOSION.first, config->SHADER_EXPLOSION.second);
 }
 
 void Scene::restart() {
 	config->reloadConfigFile();
 	useLight = config->USE_LIGHT;
-
 	deleteModels();
 	if (camera != nullptr) delete camera;
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
@@ -51,9 +51,16 @@ void Scene::restart() {
 	}
 	sceneState.setKeysStateUnpressed();
 	initModels();
-	
 	train->setTime(sceneState.elapsedTime);
 	helicopter->setTime(sceneState.elapsedTime);
+	explosion->setTime(sceneState.elapsedTime);
+}
+
+void Scene::updateObjects(float elapsedTime) {
+	camera->currentTime = elapsedTime;
+	helicopter->update(elapsedTime);
+	explosion->update(elapsedTime);
+	((DumpsterType2Object*)dumpsterType2)->checkFall();
 }
 
 void Scene::show() {
@@ -73,26 +80,28 @@ void Scene::show() {
 
 	drawSkybox();
 
+	glClearStencil(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	glStencilFunc(GL_ALWAYS, 1, 0);
-	drawMesh(train->geometry.get(), train->modelMatrix);
-
-	for (auto car : trainFreightcars) {
-		glStencilFunc(GL_ALWAYS, 2, 0);
-		drawMesh(car->geometry.get(), car->modelMatrix);
-	}
-	glStencilFunc(GL_ALWAYS, 3, 0);
+	glStencilFunc(GL_ALWAYS, 1, -1);
+	drawMesh(factory->geometry.get(), factory->modelMatrix);
+	
+	glStencilFunc(GL_ALWAYS, 2, -1);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
 	glDisable(GL_STENCIL_TEST);
-	
+
+	drawMesh(train->geometry.get(), train->modelMatrix);
+
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
 	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
-	drawMesh(factory->geometry.get(), factory->modelMatrix);
 	
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
+
+	for (auto car : trainFreightcars) {
+		drawMesh(car->geometry.get(), car->modelMatrix);
+	}
 
 	for (auto mill : windmills) {
 		drawMesh(mill->geometry.get(), mill->modelMatrix);
@@ -100,7 +109,12 @@ void Scene::show() {
 	for (auto trackPart : track) {
 		drawMesh(trackPart->geometry.get(), trackPart->modelMatrix);
 	}
-//	drawMesh(stone->geometry, stone->modelMatrix);
+
+
+	drawExplosion();
+
+
+	//drawMesh(stone->geometry, stone->modelMatrix);
 }
 
 void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
@@ -128,10 +142,36 @@ void Scene::drawSkybox() {
 	resetProgram();
 }
 
-void Scene::updateObjects(float elapsedTime) {
-	camera->currentTime = elapsedTime;
-	helicopter->update(elapsedTime);
-	((DumpsterType2Object*)dumpsterType2)->checkFall();
+void Scene::drawExplosion() {
+	if (explosion->show) {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glUseProgram(explosionProgram.program);
+
+		glm::mat4 rotationMatrix = glm::mat4(camera->view[0], camera->view[1], camera->view[2], glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		rotationMatrix = glm::transpose(rotationMatrix);
+		glm::mat4 matrix = glm::translate(glm::mat4(1.0f), explosion->position);
+		matrix = glm::scale(matrix, glm::vec3(explosion->size));
+		matrix = matrix*rotationMatrix;
+		glm::mat4 PVMmatrix = camera->projection * camera->view * matrix;
+
+		glUniformMatrix4fv(explosionProgram.PVMmatrixLocation, 1, GL_FALSE, glm::value_ptr(PVMmatrix));
+		glUniformMatrix4fv(explosionProgram.VmatrixLocation, 1, GL_FALSE, glm::value_ptr(camera->view));
+		glUniformMatrix4fv(explosionProgram.MmatrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
+
+		glUniform1f(explosionProgram.timeLocation, explosion->currentTime - explosion->startTime);
+		glUniform1i(explosionProgram.texSamplerLocation, 0);
+		glUniform1f(explosionProgram.frameDurationLocation, explosion->frameDuration);
+
+		auto geometry = explosion->textures[explosion->actualFrame++];
+
+		glBindVertexArray(geometry->vertexArrayObject);
+		glBindTexture(GL_TEXTURE_2D, geometry->texture);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, geometry->numTriangles);
+
+		resetProgram();
+		glDisable(GL_BLEND);
+	}
 }
 
 void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHeight) {
@@ -143,11 +183,24 @@ void Scene::fallDumpster() {
 	((DumpsterType2Object*)dumpsterType2)->isFallen = true;
 }
 
-void Scene::goTrain() {
-
+void Scene::startFire() {
+	explosion->show = true;
+	isFire = true;
 }
 
 void Scene::initModels() {
+	explosion = new ExplosionObject;
+	for (size_t i = 1; i < explosion->countFrames; ++i) {
+		std::string textureName;
+		if (i < 10) {
+			textureName = "data/explosion/explosion1_000";
+		} else {
+			textureName = "data/explosion/explosion1_00";
+		}
+		textureName += std::to_string(i) + ".png";
+		explosion->textures.push_back(DynamicTextureGeometry::loadTextureGeometry(explosionProgram, textureName, explosion->explosionNumQuadVertices));
+	}
+
 	train = new TrainObject;
 	train->geometry = ObjectMeshGeometry::loadMultiMesh(config->TRAIN_MODEL_PATH, this->lightProgram);
 	
@@ -219,18 +272,20 @@ Scene::~Scene() {
 	delete camera;
 	pgr::deleteProgramAndShaders(lightProgram.program);
 	pgr::deleteProgramAndShaders(skyboxProgram.program);
+	pgr::deleteProgramAndShaders(explosionProgram.program);
 }
 
 void Scene::deleteModels() {
-	if (train != nullptr) { delete train; train = nullptr; }
-	if (trainFlatcar != nullptr) { delete trainFlatcar; trainFlatcar = nullptr; }
-	if (helicopter != nullptr) { delete helicopter; helicopter = nullptr; }
-	if (factory != nullptr) { delete factory; factory = nullptr; }
-	if (dumpsterType1 != nullptr) { delete dumpsterType1; dumpsterType1 = nullptr; }
-	if (dumpsterType2 != nullptr) { delete dumpsterType2; dumpsterType2 = nullptr; }
-	if (houseType1 != nullptr) { delete houseType1; houseType1 = nullptr; }
-	if (houseType2 != nullptr) { delete houseType2; houseType2 = nullptr; }
-	if (stone != nullptr) { delete stone; stone = nullptr; }
+	delete train; 
+	delete trainFlatcar; 
+	delete helicopter; 
+	delete factory; 
+	delete dumpsterType1;
+	delete dumpsterType2; 
+	delete houseType1; 
+	delete houseType2; 
+	delete explosion;
+	delete stone; 
 	for (auto ob : trainFreightcars) { delete ob; ob = nullptr; }
 	trainFreightcars.clear();
 	for (auto ob : windmills) { delete ob; ob = nullptr; }

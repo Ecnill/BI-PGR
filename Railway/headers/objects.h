@@ -26,6 +26,7 @@ using namespace glm;
 //------------------------------------------------------------
 class Object {
 	public:
+		float size;
 		vec3 position;
 		vec3 direction;
 		mat4 modelMatrix;
@@ -36,7 +37,6 @@ class Object {
 		void showObjectCreatedMessage();
 
 		ConfigHolder *config = ConfigHolder::getInstance();
-		float size;
 };
 //------------------------------------------------------------
 class DynamicObject : public Object {
@@ -70,8 +70,7 @@ class HelicopterObject : public DynamicObject {
 
 	private:
 		void initCurveData();
-};
-		
+};	
 //------------------------------------------------------------
 class FlatcarObject : public Object {
 	public:
@@ -140,7 +139,28 @@ class SkyBoxObject : public Object {
 		std::string getObjectName() { return "SkyBoxObject"; }
 		SkyBoxGeometry *geometry;
 		mat4 getInversePVmatrix(mat4 view, mat4 projection);
-		
+};
+
+
+class ExplosionObject : public DynamicObject {
+	public:
+		ExplosionObject();
+		std::string getObjectName() { return "ExplosionObject"; }
+		void update(float elapsedTime);
+
+		bool show;
+		int   countFrames;
+		float frameDuration;
+		int   actualFrame;
+		std::vector<DynamicTextureGeometry*> textures;
+
+		const vector<float> explosionNumQuadVertices = {
+			// x      y     z     u     v
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 
+			1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 
+		};
 };
 
 #endif // __OBJECTS_H

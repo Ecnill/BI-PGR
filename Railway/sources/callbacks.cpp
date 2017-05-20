@@ -133,16 +133,6 @@ void timerCallback(int) {
 		glutPassiveMotionFunc(passiveMouseMotionCallback);
 		glutWarpPointer(scene->sceneState.windowWidth / 2, scene->sceneState.windowHeight / 2);
 	}
-	/*
-	sceneObjects.Camera->style = sceneObjects.Camera->FR;
-		if (sceneObjects.Camera->style != sceneObjects.Camera->FREELOOK) { // misto false bylo true
-			glutPassiveMotionFunc(passiveMouseMotionCallback);
-			glutWarpPointer(sceneState.windowWidth / 2, sceneState.windowHeight / 2);
-		}
-		else {
-			glutPassiveMotionFunc(NULL);
-		}
-	*/
 	if (scene->sceneState.keyMap[KEY_F4] == true) {
 		scene->camera->actualState = scene->camera->FROM_HELICOPTER;
 		glutPassiveMotionFunc(NULL);
@@ -188,19 +178,20 @@ void onMouseButton(int button, int state, int x, int y) {
 		unsigned char id = 0;
 		glReadPixels(x, config->WINDOW_HEIGHT - 1 - y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, &id);
 		switch (id) {
-			case 0:
-				
+			case 1: {
+				std::cout << "!!!\n";
+				scene->startFire();
 				break;
-			case 1:
-				scene->goTrain();
-				break;
-			case 2:
-			
-				break;
-			case 3:
+			}
+			case 2: {
+				std::cout << "!!&&!\n";
 				scene->fallDumpster();
 				break;
 			}
+			default:
+				break;
+			}
+		
 	}
 }
 

@@ -68,19 +68,14 @@ void LightShaderProgram::init(bool useLight, const std::string & fileVertexShade
 void LightShaderProgram::setMaterialUniforms(Material *material) {
 	if (material != nullptr) {
 		glUniform3fv(diffuseLocation, 1, glm::value_ptr(material->diffuse));  // 2nd parameter must be 1 - it declares number of vectors in the vector array
-		CHECK_GL_ERROR();
 		glUniform3fv(ambientLocation, 1, glm::value_ptr(material->ambient));
-		CHECK_GL_ERROR();
 		glUniform3fv(specularLocation, 1, glm::value_ptr(material->specular));
-		CHECK_GL_ERROR();
 		glUniform1f(shininessLocation, material->shininess);
-		CHECK_GL_ERROR();
 		if (material->textureId != 0) {
 			glUniform1i(useTextureLocation, 1);  // do texture sampling
 			glUniform1i(texSamplerLocation, 0);  // texturing unit 0 -> samplerID   [for the GPU linker]
 			glActiveTexture(GL_TEXTURE0 + 0);                  // texturing unit 0 -> to be bound [for OpenGL BindTexture]
 			glBindTexture(GL_TEXTURE_2D, material->textureId);
-			CHECK_GL_ERROR();
 		} else {
 			glUniform1i(useTextureLocation, 0);  // do not sample the texture
 		}
@@ -95,4 +90,24 @@ void SkyboxShaderProgram::init(const std::string &fileVertexShader, const std::s
 	// get uniforms locations
 	skyboxSamplerLocation = glGetUniformLocation(program, "skyboxSampler");
 	inversePVmatrixLocation = glGetUniformLocation(program, "inversePVmatrix");
+}
+
+void ExplosionShaderProgram::init(bool inFire, const std::string & fileVertexShader, const std::string & fileFragmentShader) {
+	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
+	posLocation = glGetAttribLocation(program, "position");
+	texCoordLocation = glGetAttribLocation(program, "texCoord");
+	PVMmatrixLocation = glGetUniformLocation(program, "PVMmatrix");
+	VmatrixLocation = glGetUniformLocation(program, "Vmatrix");
+	timeLocation = glGetUniformLocation(program, "time");
+	texSamplerLocation = glGetUniformLocation(program, "texSampler");
+	frameDurationLocation = glGetUniformLocation(program, "frameDuration");
+	fogColorLocation = glGetUniformLocation(program, "fColor");
+	fogStartLocation = glGetUniformLocation(program, "fStart");
+	fogEndLocation = glGetUniformLocation(program, "fEnd");
+	fogLocation = glGetUniformLocation(program, "fog");
+	if (inFire) {
+		inFireLocation = glGetUniformLocation(program, "inFire");
+	}
+	VmatrixLocation = glGetUniformLocation(program, "Vmatrix");
+	MmatrixLocation = glGetUniformLocation(program, "Mmatrix");
 }

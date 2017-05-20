@@ -16,7 +16,7 @@ MeshGeometry::~MeshGeometry() {
 		delete sub;
 	}
 }
-
+//------------------------------------------------------------
 shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &fileName, LightShaderProgram &shader) {
 	Assimp::Importer importer;
 	shared_ptr<ObjectMeshGeometry> geometry = nullptr;
@@ -37,7 +37,6 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 		return geometry;
 	}
 	std::cout << "Loaded " << scn->mNumMeshes << " meshes" << std::endl;
-
 	geometry = shared_ptr<ObjectMeshGeometry> (new ObjectMeshGeometry());
 	for (size_t i = 0; i < scn->mNumMeshes; ++i) {
 		// in this phase we know we have one mesh in our loaded scene, we can directly copy its data to opengl ...
@@ -64,7 +63,6 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 				*currentTextureCoord++ = vect.y;
 			}
 		} 
-
 		// finally store all texture coordinates
 		glBufferSubData(GL_ARRAY_BUFFER, 6 * sizeof(float)*mesh->mNumVertices, 2 * sizeof(float)*mesh->mNumVertices, textureCoords);
 
@@ -89,10 +87,8 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 
 		glGenVertexArrays(1, &(subMesh->vertexArrayObject));
 		glBindVertexArray(subMesh->vertexArrayObject);
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (subMesh)->elementBufferObject); // bind our element array buffer (indices) to vao
 		glBindBuffer(GL_ARRAY_BUFFER, (subMesh)->vertexBufferObject);
-
 		glEnableVertexAttribArray(shader.posLocation);
 		glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -105,7 +101,6 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 			// -> if you see black screen (no objects at all) than try to set color manually in vertex shader to see at least something
 			glVertexAttrib3f(shader.colorLocation, subMesh->material->color.r, subMesh->material->color.g, subMesh->material->color.b);
 		}
-
 		glEnableVertexAttribArray(shader.texCoordLocation);
 		glVertexAttribPointer(shader.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)(6 * sizeof(float) * mesh->mNumVertices));
 		CHECK_GL_ERROR();
@@ -116,57 +111,6 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 	return geometry;
 }
 
-CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, const std::vector<unsigned> &triangles, const std::vector<float> &vertices) {
-	CodeMeshGeometry *geometry = new CodeMeshGeometry;
-
-	glGenVertexArrays(1, &((geometry)->vertexArrayObject));
-	glBindVertexArray((geometry)->vertexArrayObject);
-
-	glGenBuffers(1, &((geometry)->vertexBufferObject));
-	glBindBuffer(GL_ARRAY_BUFFER, (geometry)->vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW);
-
-	// copy our temporary index array to opengl and free the array
-	glGenBuffers(1, &((geometry)->elementBufferObject));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (geometry)->elementBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(shader.posLocation);
-	// vertices of triangles - start at the beginning of the array
-	glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-
-	if (ConfigHolder::getInstance()->USE_LIGHT) {
-		glEnableVertexAttribArray(shader.normalLocation);
-		// normal of vertex starts after the color (interlaced array)
-		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	} else {
-		glEnableVertexAttribArray(shader.colorLocation);
-		// color of vertex starts after the position (interlaced arrays)
-		glVertexAttribPointer(shader.colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	}
-	glBindVertexArray(0);
-
-	geometry->numTriangles = triangles.size() / 3;
-
-
-	Material *m = new Material;
-
-	m->ambient = glm::vec3(0.0f, 1.0f, 1.0f);
-	m->diffuse = glm::vec3(0.0f, 1.0f, 1.0f);
-	m->specular = glm::vec3(0.0f, 1.0f, 1.0f);
-	m->shininess = 10.0f;
-
-	m->createTexture("./data/models/rock/Rock5.jpg");
-
-
-	SubMeshGeometry *s = new SubMeshGeometry;
-	s->material = m;
-	geometry->subMeshVector.push_back(s);
-	return geometry;
-}
-
-
-//------ static utils ---------------------------------
 Material *ObjectMeshGeometry::getSingleMeshMaterial(const aiMaterial *mat, const std::string &fileName) {
 	aiColor3D color;
 	aiString name;
@@ -202,7 +146,73 @@ Material *ObjectMeshGeometry::getSingleMeshMaterial(const aiMaterial *mat, const
 	}
 	return material;
 }
+//------------------------------------------------------------
+CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, const std::vector<unsigned> &triangles, const std::vector<float> &vertices) {
+	CodeMeshGeometry *geometry = new CodeMeshGeometry;
 
+	glGenVertexArrays(1, &((geometry)->vertexArrayObject));
+	glBindVertexArray((geometry)->vertexArrayObject);
+
+	glGenBuffers(1, &((geometry)->vertexBufferObject));
+	glBindBuffer(GL_ARRAY_BUFFER, (geometry)->vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW);
+
+	// copy our temporary index array to opengl and free the array
+	glGenBuffers(1, &((geometry)->elementBufferObject));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (geometry)->elementBufferObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(shader.posLocation);
+	// vertices of triangles - start at the beginning of the array
+	glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+
+	if (ConfigHolder::getInstance()->USE_LIGHT) {
+		glEnableVertexAttribArray(shader.normalLocation);
+		// normal of vertex starts after the color (interlaced array)
+		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	} else {
+		glEnableVertexAttribArray(shader.colorLocation);
+		// color of vertex starts after the position (interlaced arrays)
+		glVertexAttribPointer(shader.colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(0);
+
+	geometry->numTriangles = triangles.size() / 3;
+
+	Material *m = new Material;
+	m->ambient = glm::vec3(0.0f, 1.0f, 1.0f);
+	m->diffuse = glm::vec3(0.0f, 1.0f, 1.0f);
+	m->specular = glm::vec3(0.0f, 1.0f, 1.0f);
+	m->shininess = 10.0f;
+	m->createTexture("./data/models/rock/Rock5.jpg");
+
+	SubMeshGeometry *s = new SubMeshGeometry;
+	s->material = m;
+	geometry->subMeshVector.push_back(s);
+	return geometry;
+}
+//------------------------------------------------------------
+DynamicTextureGeometry *DynamicTextureGeometry::loadTextureGeometry(ExplosionShaderProgram program, const std::string textureName, std::vector<float> explosionVertexData) {
+	DynamicTextureGeometry *geometry = new DynamicTextureGeometry;
+	geometry->texture = pgr::createTexture(textureName);
+
+	glGenVertexArrays(1, &(geometry->vertexArrayObject));
+	glBindVertexArray(geometry->vertexArrayObject);
+	glGenBuffers(1, &(geometry->vertexBufferObject));
+	glBindBuffer(GL_ARRAY_BUFFER, geometry->vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(explosionVertexData.data()) * explosionVertexData.size(), explosionVertexData.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(program.posLocation);
+	// vertices of triangles - start at the beginning of the array (interlaced array)
+	glVertexAttribPointer(program.posLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glEnableVertexAttribArray(program.texCoordLocation);
+	// texture coordinates are placed just after the position of each vertex (interlaced array)
+	glVertexAttribPointer(program.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindVertexArray(0);
+	geometry->numTriangles = explosionVertexData.size();
+	return geometry;
+}
+//------------------------------------------------------------
 SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glGenVertexArrays(1, &(vertexArrayObject));
 	glBindVertexArray(vertexArrayObject);
@@ -210,7 +220,6 @@ SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glGenBuffers(1, &(vertexBufferObject)); 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screenCoords), screenCoords, GL_STATIC_DRAW);
-
 	glEnableVertexAttribArray(shaderProgram.screenCoordLocation);
 	glVertexAttribPointer(shaderProgram.screenCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -243,33 +252,3 @@ SkyBoxGeometry::SkyBoxGeometry(SkyboxShaderProgram &shaderProgram) {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	CHECK_GL_ERROR();
 }
-
-//shared_ptr<ExplosionGeometry> ExplosionGeometry::createFromFileMesh(ShaderProgram shader, const string &textureName) {
-//
-//	shared_ptr<ExplosionGeometry> geometry (new MeshGeometry);
-//
-//	//std::string textName = EXPLOSION_TEXTURE_NAME; // TODO
-//
-//	geometry->
-//
-//	(geometry)->textureId = pgr::createTexture(textureName);
-//
-//	glGenVertexArrays(1, &((*geometry)->vertexArrayObject));
-//	glBindVertexArray((*geometry)->vertexArrayObject);
-//
-//	glGenBuffers(1, &((*geometry)->vertexBufferObject));
-//	glBindBuffer(GL_ARRAY_BUFFER, (*geometry)->vertexBufferObject);
-//	glBufferData(GL_ARRAY_BUFFER, sizeof(explosionVertexData), explosionVertexData, GL_STATIC_DRAW);
-//
-//	glEnableVertexAttribArray(explosionShader.posLocation);
-//	// vertices of triangles - start at the beginning of the array (interlaced array)
-//	glVertexAttribPointer(explosionShader.posLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-//
-//	glEnableVertexAttribArray(explosionShader.texCoordLocation);
-//	// texture coordinates are placed just after the position of each vertex (interlaced array)
-//	glVertexAttribPointer(explosionShader.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-//
-//	glBindVertexArray(0);
-//
-//	(*geometry)->numTriangles = explosionNumQuadVertices;
-//}

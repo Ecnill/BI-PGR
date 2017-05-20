@@ -62,6 +62,12 @@
     <None Include="shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\explosion.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\explosion.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\callbacks.cpp">

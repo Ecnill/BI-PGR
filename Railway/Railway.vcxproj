@@ -31,6 +31,8 @@
     <ClInclude Include="headers\spline.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\explosion.frag" />
+    <None Include="shaders\explosion.vert" />
     <None Include="shaders\light.frag" />
     <None Include="shaders\light.vert" />
     <None Include="shaders\skybox.frag" />

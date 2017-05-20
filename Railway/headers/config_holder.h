@@ -23,8 +23,6 @@ class ConfigHolder {
 		int WINDOW_HEIGHT;
 		string WINDOW_TITLE;
 
-		const float SCENE_DEPTH = 1.0;
-
 		// program variables
 		bool USE_LIGHT;
 		float CAMERA_SPEED;
@@ -32,6 +30,7 @@ class ConfigHolder {
 		// shaders
 		pair<string, string> SHADER_SKYBOX;
 		pair<string, string> SHADER_LIGHT;
+		pair<string, string> SHADER_EXPLOSION;
 		
 		// objects
 		float TRAIN_SIZE;

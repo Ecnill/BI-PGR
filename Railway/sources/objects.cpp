@@ -197,3 +197,24 @@ mat4 SkyBoxObject::getInversePVmatrix(mat4 view, mat4 projection) {
 	// vertex shader will translate screen space coordinates (NDC) using inverse PV matrix
 	return inverse(projection * viewRotation);
 }
+
+ExplosionObject::ExplosionObject() : show(false) {
+	showObjectCreatedMessage();
+	size = config->FACTORY_SIZE;
+	direction = DEFAULT_DIRECTION;
+	position = FACTORY_POSITION;
+	frameDuration = 10.0f;
+	actualFrame = 1;
+	countFrames = 90;
+}
+
+void ExplosionObject::update(float elapsedTime) {
+	currentTime = elapsedTime;
+	if (actualFrame >= countFrames - 1) {
+		actualFrame = 1;
+		show = false;
+	}
+	/*if (currentTime > (startTime + textures.size() * frameDuration)) {
+		show = false;
+	}*/
+}

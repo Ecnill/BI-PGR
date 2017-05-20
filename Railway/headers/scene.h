@@ -27,7 +27,7 @@ class Scene {
 
 		// interactivity 
 		void fallDumpster();
-		void goTrain();
+		void startFire();
 
 		SceneState sceneState;
 		Camera *camera;
@@ -39,12 +39,13 @@ class Scene {
 		void initShaders();
 		LightShaderProgram lightProgram;
 		SkyboxShaderProgram skyboxProgram;
+		ExplosionShaderProgram explosionProgram;
 		
 		// models
 		void initModels();
-
-		DynamicObject *train;
+		
 		DynamicObject *helicopter;
+		DynamicObject *train;
 
 		Object *trainFlatcar;
 		Object *factory;
@@ -53,6 +54,7 @@ class Scene {
 		Object *houseType1;
 		Object *houseType2;
 
+		ExplosionObject *explosion;
 		StoneObject *stone;
 		SkyBoxObject *skybox;
 
@@ -62,15 +64,18 @@ class Scene {
 
 		// flags
 		bool useLight;
+		bool isFire;
 
 		// draw methods
 		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
+		void drawExplosion();
 
 		// utils, config
 		void resetProgram();
 		void deleteModels();
 		ConfigHolder *config;
+
 };
 
 #endif // __SCENE_H
