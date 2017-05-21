@@ -27,6 +27,10 @@ in vec2 texCoord;
 uniform float time;  
 uniform Material material; 
 
+uniform bool dayActive;	
+uniform bool spotLightActive;
+uniform bool pointLightActive;
+
 uniform mat4 PVMmatrix;  
 uniform mat4 Pmatrix;
 uniform mat4 Vmatrix;       
@@ -35,6 +39,9 @@ uniform mat4 normalMatrix;
 
 uniform vec3 reflectorPosition;   
 uniform vec3 reflectorDirection; 
+
+uniform vec3 pointLightPosition;   
+uniform vec3 pointLightDirection; 
 
 smooth out vec2 texCoord_v;  
 smooth out vec4 color_v;     
@@ -69,8 +76,21 @@ vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexN
   return vec4(ret, 1.0);
 }
 //-------------------------------------------------------
-void main() {
+vec4 pointLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
+	vec3 ret = vec3(0.0f);
+	vec3 L = normalize(light.position - vertexPosition);
+	vec3 R = reflect(-L, vertexNormal);
+	vec3 V = normalize(-vertexPosition);
+	float spotCoef = max(0.0f, dot(-L, light.spotDirection));
 
+	ret += material.ambient * light.ambient;
+	ret += material.diffuse * light.diffuse * max(0.0f, dot(vertexNormal, L));
+	ret += material.specular * light.specular * pow(max(0.0f, dot(R, V)), material.shininess);
+	ret *= pow(spotCoef, light.spotExponent);
+	return vec4(ret, 1.0f);
+}
+//-------------------------------------------------------
+void main() {
 	Light sun;
 	float sunSpeed = 0.5f;
 	sun.ambient  = vec3(0.0);
@@ -84,9 +104,16 @@ void main() {
 	trainReflector.specular      = vec3(1.0);
 	trainReflector.spotCosCutOff = 0.95f;
 	trainReflector.spotExponent  = 0.0;
-
 	trainReflector.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
 	trainReflector.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
+
+	Light point;
+	point.ambient		= vec3(0.2f);
+	point.diffuse		= vec3(0.03f);
+	point.specular		= vec3(0.3f);
+	point.spotExponent	= 0.2f;
+	point.position		=  (Vmatrix * vec4(pointLightPosition, 5.0f)).xyz;
+	point.spotDirection	= normalize((Vmatrix * vec4(pointLightDirection, 0.0f)).xyz);;
 
 	vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       
 	vec3 vertexNormal   = normalize( (Vmatrix * normalMatrix * vec4(normal, 0.0) ).xyz);   
@@ -94,10 +121,21 @@ void main() {
 	vec3 globalAmbientLight = vec3(0.4f);
 	vec4 outputColor = vec4(material.ambient * globalAmbientLight, 0.0);
 
-	outputColor += directionalLight(sun, material, vertexPosition, vertexNormal);
-	outputColor += spotLight(trainReflector, material, vertexPosition, vertexNormal);
+	if (dayActive) {
+		outputColor += directionalLight(sun, material, vertexPosition, vertexNormal);
+	} 
+
+	if (spotLightActive) {
+		outputColor += spotLight(trainReflector, material, vertexPosition, vertexNormal);
+	}
+
+	if (pointLightActive) {
+		outputColor += pointLight(point, material, vertexPosition, vertexNormal);
+	}
+	
 	gl_Position = PVMmatrix * vec4(position, 1);   
 
 	color_v = outputColor;
 	texCoord_v = texCoord;
+
 }

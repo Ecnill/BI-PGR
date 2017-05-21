@@ -57,7 +57,14 @@ void LightShaderProgram::init(bool useLight, const std::string & fileVertexShade
 		reflectorPositionLocation = glGetUniformLocation(program, "reflectorPosition");
 		reflectorDirectionLocation = glGetUniformLocation(program, "reflectorDirection");
 		// fog
-		fogActiveLocation = glGetUniformLocation(program, "fogActive");
+		fogActive = glGetUniformLocation(program, "fogActive");
+
+		// lights
+		dayActive = glGetUniformLocation(program, "dayActive");
+
+		spotLightActive = glGetUniformLocation(program, "spotLightActive");
+		pointLightPosition = glGetUniformLocation(program, "pointLightPosition");
+		pointLightDirection = glGetUniformLocation(program, "pointLightDirection");
 	
 	} else {
 		createShaderProgramFromString();

@@ -49,7 +49,12 @@ class LightShaderProgram: public ShaderProgram{
 		GLint colorLocation;
 		GLint reflectorPositionLocation;  
 		GLint reflectorDirectionLocation; 
-		GLint fogActiveLocation;
+		GLboolean fogActive;
+		GLboolean dayActive;
+		GLboolean spotLightActive;
+		GLboolean pointLightActive;
+		GLint pointLightPosition;
+		GLint pointLightDirection;
 
 	private:
 		GLint normalMatrixLocation; 				

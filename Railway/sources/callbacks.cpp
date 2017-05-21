@@ -30,8 +30,22 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			break;
 		}
 		case 's': {
-			scene->isSpotLight = !scene->isSpotLight;
+			if (!scene->isDay) {
+				scene->isSpotLight = !scene->isSpotLight;
+			}
 			break;
+		}
+		case 'd': {
+			scene->isDay = !scene->isDay; 
+			if (scene->isDay) {
+				scene->isPointLight = false;
+			}
+			break;
+		}
+		case 'p': {
+			if (!scene->isDay) {
+				scene->isPointLight = !scene->isPointLight;
+			}
 		}
 		default:
 			break;

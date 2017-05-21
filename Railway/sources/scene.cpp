@@ -41,6 +41,8 @@ void Scene::restart() {
 	useLight = config->USE_LIGHT;
 	isFog = false;
 	isSpotLight = false;
+	isPointLight = false;
+	isDay = false;
 	deleteModels();
 	if (camera != nullptr) delete camera;
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
@@ -93,11 +95,13 @@ void Scene::show() {
 	drawWithSpotLight(train);
 	glDisable(GL_STENCIL_TEST);
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
-	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
+	
+	drawWithPointLight(dumpsterType1);
+
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
-	drawWithSpotLight(helicopter);
+	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
 
 	for (auto car : trainFreightcars) {
 		drawMesh(car->geometry.get(), car->modelMatrix);
@@ -114,19 +118,43 @@ void Scene::show() {
 }
 
 void Scene::drawWithSpotLight(Object *object) {
-	if (isSpotLight) {
+	glUseProgram(lightProgram.program);
+	glUniform1f(lightProgram.spotLightActive, isSpotLight);
+	glUniform1f(lightProgram.timeLocation, sceneState.elapsedTime);
+	glUniform3fv(lightProgram.reflectorPositionLocation, 1, glm::value_ptr(object->position));
+	glUniform3fv(lightProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->direction));
+	glUseProgram(0);
+	
+	drawMesh(object->geometry.get(), object->modelMatrix);
+}
+
+void Scene::drawWithPointLight(Object *object) {
+	if (isPointLight) {
 		glUseProgram(lightProgram.program);
-		glUniform1f(lightProgram.timeLocation, sceneState.elapsedTime);
-		glUniform3fv(lightProgram.reflectorPositionLocation, 1, glm::value_ptr(object->position));
-		glUniform3fv(lightProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->direction));
-		glUseProgram(0);
+		CHECK_GL_ERROR();
+		glUniform1f(lightProgram.spotLightActive, isPointLight);
+		CHECK_GL_ERROR();
+		vec3 newPos = vec3(object->position.x, object->position.y, 5.0f);
+		glUniform3fv(lightProgram.pointLightPosition, 1, glm::value_ptr(newPos));
+		CHECK_GL_ERROR();
+		glUniform3fv(lightProgram.pointLightDirection, 1, glm::value_ptr(object->direction));
+		CHECK_GL_ERROR();
 	}
+
+	//glUniform3fv(bmwLightPositionLoc, 1, glm::value_ptr(lightPosition));
+	//glUniform3fv(bmwLightDirectionLoc, 1, glm::value_ptr(direction));
+	//glUniform1f(bmwLightCutOffLoc, cutOff);
+	//glUniform1f(bmwLightExponentLoc, exponent);
+	//glUniform1f(bmwLightEnabledLoc, lightEnabled);
+
+
 	drawMesh(object->geometry.get(), object->modelMatrix);
 }
 
 void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 	glUseProgram(lightProgram.program);
-	glUniform1f(lightProgram.fogActiveLocation, isFog);
+	glUniform1f(lightProgram.fogActive, isFog);
+	glUniform1f(lightProgram.dayActive, isDay);
 	// setting matrices to the vertex & fragment shader
 	lightProgram.setTransformUniforms(modelMatrix, camera->view, camera->projection);
 	for (auto it : geometry->subMeshVector) {

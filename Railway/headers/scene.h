@@ -16,7 +16,7 @@ using namespace glm;
 class Scene {
 
 	public:
-		Scene() : isFog(false), isSpotLight(false) {}
+		Scene() : isFog(false), isSpotLight(false), isDay(false), isPointLight(false) {}
 		static Scene *getInstance();
 		~Scene();
 		bool init(const std::string &configFilePath);
@@ -36,6 +36,8 @@ class Scene {
 
 		bool isFog;
 		bool isSpotLight;
+		bool isDay;
+		bool isPointLight;
 
 	private:
 		static Scene *instance;
@@ -76,9 +78,11 @@ class Scene {
 
 		// draw methods
 		void drawWithSpotLight(Object *object);
+		void drawWithPointLight(Object *object);
 		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
 		void drawExplosion();
+		
 
 		// utils, config
 		void resetProgram();
