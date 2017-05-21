@@ -41,15 +41,15 @@ class ShaderProgram {
 //------------------------------------------------------------
 class LightShaderProgram: public ShaderProgram{			
 	public:
-		GLint normalLocation;
-		GLint colorLocation;
-
 		void init(bool useLight, const std::string &fileVertexShader, const std::string &fileFragmentShader);
 		void setMaterialUniforms(Material *material);
 		void setTransformUniforms(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
-		GLint reflectorPositionLocation;
-		GLint reflectorDirectionLocation;
+		GLint normalLocation;
+		GLint colorLocation;
+		GLint reflectorPositionLocation;  
+		GLint reflectorDirectionLocation; 
+		GLint fogActiveLocation;
 
 	private:
 		GLint normalMatrixLocation; 				
@@ -63,11 +63,12 @@ class LightShaderProgram: public ShaderProgram{
 //------------------------------------------------------------
 class SkyboxShaderProgram : public ShaderProgram {
 	public:
+		void init(const std::string &fileVertexShader, const std::string &fileFragmentShader);
+
 		GLint inversePVmatrixLocation;
 		GLint skyboxSamplerLocation;
 		GLint screenCoordLocation;
-
-		void init(const std::string &fileVertexShader, const std::string &fileFragmentShader);
+		GLint fogActiveLocation;
 };
 //------------------------------------------------------------
 class ExplosionShaderProgram : public ShaderProgram {

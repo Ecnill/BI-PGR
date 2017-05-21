@@ -134,9 +134,12 @@ class StoneObject : public Object {
 //------------------------------------------------------------
 class SkyBoxObject : public Object {
 	public:
+		SkyBoxObject() : fog(false) {}
 		std::string getObjectName() { return "SkyBoxObject"; }
 		SkyBoxGeometry *geometry;
 		mat4 getInversePVmatrix(mat4 view, mat4 projection);
+
+		bool fog;
 };
 
 

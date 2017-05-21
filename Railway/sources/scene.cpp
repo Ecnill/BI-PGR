@@ -26,7 +26,7 @@ void Scene::start() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	useLight = config->USE_LIGHT;
-	isFire = false;
+	isFog = false;
 	initShaders();
 	restart();
 }
@@ -123,6 +123,7 @@ void Scene::drawWithReflection(Object *object) {
 
 void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 	glUseProgram(lightProgram.program);
+	glUniform1f(lightProgram.fogActiveLocation, isFog);
 	// setting matrices to the vertex & fragment shader
 	lightProgram.setTransformUniforms(modelMatrix, camera->view, camera->projection);
 	for (auto it : geometry->subMeshVector) {
@@ -136,6 +137,7 @@ void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 void Scene::drawSkybox() {
 	glUseProgram(skyboxProgram.program);
 	glUniformMatrix4fv(skyboxProgram.inversePVmatrixLocation, 1, GL_FALSE, glm::value_ptr(skybox->getInversePVmatrix(camera->view, camera->projection)));
+	glUniform1f(skyboxProgram.fogActiveLocation, isFog);
 	glUniform1i(skyboxProgram.skyboxSamplerLocation, 0);
 	// draw "skybox" rendering 2 triangles covering the far plane
 	glBindVertexArray(skybox->geometry->vertexArrayObject);
@@ -185,7 +187,7 @@ void Scene::fallDumpster() {
 
 void Scene::startFire() {
 	explosion->show = true;
-	//isFire = true;
+	isFire = true;
 }
 
 void Scene::goTrain() {

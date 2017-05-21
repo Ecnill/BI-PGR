@@ -25,6 +25,9 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 			glutReshapeWindow(config->WINDOW_WIDTH, config->WINDOW_HEIGHT);
 			break;
 		}
+		case 'f': {
+			scene->isFog = !scene->isFog;
+		}
 		default:
 			break;
 	}

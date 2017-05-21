@@ -44,6 +44,7 @@ void LightShaderProgram::init(bool useLight, const std::string & fileVertexShade
 		MmatrixLocation = glGetUniformLocation(program, "Mmatrix");
 		normalMatrixLocation = glGetUniformLocation(program, "normalMatrix");
 		timeLocation = glGetUniformLocation(program, "time");
+
 		// material
 		ambientLocation = glGetUniformLocation(program, "material.ambient");
 		diffuseLocation = glGetUniformLocation(program, "material.diffuse");
@@ -55,6 +56,8 @@ void LightShaderProgram::init(bool useLight, const std::string & fileVertexShade
 		// reflector
 		reflectorPositionLocation = glGetUniformLocation(program, "reflectorPosition");
 		reflectorDirectionLocation = glGetUniformLocation(program, "reflectorDirection");
+		// fog
+		fogActiveLocation = glGetUniformLocation(program, "fogActive");
 	
 	} else {
 		createShaderProgramFromString();
@@ -91,6 +94,8 @@ void SkyboxShaderProgram::init(const std::string &fileVertexShader, const std::s
 	// get uniforms locations
 	skyboxSamplerLocation = glGetUniformLocation(program, "skyboxSampler");
 	inversePVmatrixLocation = glGetUniformLocation(program, "inversePVmatrix");
+
+	fogActiveLocation = glGetUniformLocation(program, "fogActive");
 }
 
 void ExplosionShaderProgram::init(bool inFire, const std::string & fileVertexShader, const std::string & fileFragmentShader) {

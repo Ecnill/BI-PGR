@@ -88,19 +88,16 @@ void main() {
 	trainReflector.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
 	trainReflector.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
 
+	vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       
+	vec3 vertexNormal   = normalize( (Vmatrix * normalMatrix * vec4(normal, 0.0) ).xyz);   
 
-  vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       
-  vec3 vertexNormal   = normalize( (Vmatrix * normalMatrix * vec4(normal, 0.0) ).xyz);   
-
-  vec3 globalAmbientLight = vec3(0.4f);
-  vec4 outputColor = vec4(material.ambient * globalAmbientLight, 0.0);
+	vec3 globalAmbientLight = vec3(0.4f);
+	vec4 outputColor = vec4(material.ambient * globalAmbientLight, 0.0);
 
 	outputColor += directionalLight(sun, material, vertexPosition, vertexNormal);
 	outputColor += spotLight(trainReflector, material, vertexPosition, vertexNormal);
-
 	gl_Position = PVMmatrix * vec4(position, 1);   
 
 	color_v = outputColor;
 	texCoord_v = texCoord;
-
 }

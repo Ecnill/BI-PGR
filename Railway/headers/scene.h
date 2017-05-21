@@ -33,6 +33,8 @@ class Scene {
 		SceneState sceneState;
 		Camera *camera;
 
+		bool isFog;
+
 	private:
 		static Scene *instance;
 		
