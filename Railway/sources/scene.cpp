@@ -89,15 +89,14 @@ void Scene::show() {
 	glStencilFunc(GL_ALWAYS, 2, -1);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
 	glStencilFunc(GL_ALWAYS, 3, -1);
-	drawMesh(train->geometry.get(), train->modelMatrix);
+	drawWithReflection(train);
 	glDisable(GL_STENCIL_TEST);
-
-	
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
-	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
+
+	drawWithReflection(helicopter);
 
 	for (auto car : trainFreightcars) {
 		drawMesh(car->geometry.get(), car->modelMatrix);
@@ -111,6 +110,15 @@ void Scene::show() {
 	}
 	drawExplosion();
 	drawMesh(rock->geometry.get(), rock->modelMatrix);
+}
+
+void Scene::drawWithReflection(Object *object) {
+	glUseProgram(lightProgram.program);
+	glUniform1f(lightProgram.timeLocation, sceneState.elapsedTime);
+	glUniform3fv(lightProgram.reflectorPositionLocation, 1, glm::value_ptr(object->position));
+	glUniform3fv(lightProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->direction));
+	glUseProgram(0);
+	drawMesh(object->geometry.get(), object->modelMatrix);
 }
 
 void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {

@@ -18,7 +18,6 @@ out vec4       color_f;        // outgoing fragment color
 void main() {
 	color_f = color_v;
 
-  // if material has a texture -> apply it
 	if (material.useTexture) {
 		color_f =  color_v * texture(texSampler, texCoord_v);
 	}

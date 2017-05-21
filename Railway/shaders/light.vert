@@ -1,168 +1,106 @@
 #version 140
 
-// IMPORTANT: !!! lighting is evaluated in camera space !!!
-
-struct Material {      // structure that describes currently used material
-  vec3  ambient;       // ambient component
-  vec3  diffuse;       // diffuse component
-  vec3  specular;      // specular component
-  float shininess;     // sharpness of specular reflection
-
-  bool  useTexture;    // defines whether the texture is used or not
+struct Material {     
+  vec3  ambient;       
+  vec3  diffuse;      
+  vec3  specular;      
+  float shininess;    
+  bool  useTexture;    
 };
 
-// warning: sampler inside the Material struct can cause problems -> so its outside
-uniform sampler2D texSampler;  // sampler for the texture access
-
-struct Light {         // structure describing light parameters
-  vec3  ambient;       // intensity & color of the ambient component
-  vec3  diffuse;       // intensity & color of the diffuse component
-  vec3  specular;      // intensity & color of the specular component
-  vec3  position;      // light position
-  vec3  spotDirection; // spotlight direction
-  float spotCosCutOff; // cosine of the spotlight's half angle
-  float spotExponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
+struct Light {         
+  vec3  ambient;       
+  vec3  diffuse;       
+  vec3  specular;     
+  vec3  position;      
+  vec3  spotDirection; 
+  float spotCosCutOff;
+  float spotExponent;  
 };
+//-------------------------------------------------------
+uniform sampler2D texSampler; 
 
-in vec3 position;           // vertex position in world space
-in vec3 normal;             // vertex normal
-in vec2 texCoord;           // incoming texture coordinates
+in vec3 position;           
+in vec3 normal;             
+in vec2 texCoord;          
 
-uniform float time;         // time used for simulation of moving lights (such as sun)
-uniform Material material;  // current material
+uniform float time;  
+uniform Material material; 
 
-uniform mat4 PVMmatrix;     // Projection * View * Model  --> model to clip coordinates
+uniform mat4 PVMmatrix;  
 uniform mat4 Pmatrix;
-uniform mat4 Vmatrix;       // View                       --> world to eye coordinates
-uniform mat4 Mmatrix;       // Model                      --> model to world coordinates
-uniform mat4 normalMatrix;  // inverse transposed Mmatrix
+uniform mat4 Vmatrix;       
+uniform mat4 Mmatrix;       
+uniform mat4 normalMatrix;  
 
-uniform vec3 reflectorPosition;   // reflector position (world coordinates)
-uniform vec3 reflectorDirection;  // reflector direction (world coordinates)
+uniform vec3 reflectorPosition;   
+uniform vec3 reflectorDirection; 
 
-smooth out vec2 texCoord_v;  // outgoing texture coordinates
-smooth out vec4 color_v;     // outgoing fragment color
-
+smooth out vec2 texCoord_v;  
+smooth out vec4 color_v;     
+//-------------------------------------------------------
 float dotNormalLight(vec3 vertexNormal, vec3 lightDirection) {
 	return max(0.0f, dot(vertexNormal, lightDirection));
 }
-
+//-------------------------------------------------------
 float dotReflectVertex(vec3 R, vec3 V) {
 	return max(0.0f, dot(R, V));
 }
-
-vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
-
-  vec3 ret = vec3(0.0);
-
-  // use the material and light structures to obtain the surface and light properties
-  // the vertexPosition and vertexNormal variables contain transformed surface position and normal
-  // store the ambient, diffuse and specular terms to the ret variable
-  // for spot lights, light.position contains the light position
-  // everything is expressed in the view coordinate system -> eye/camera is in the origin
-
-// ======== BEGIN OF SOLUTION - TASK 3_3-2 ======== //
-
-  vec3 L = normalize(light.position - vertexPosition);
-  vec3 R = reflect(-L, vertexNormal);
-  vec3 V = normalize(-vertexPosition);
-
-  ret += material.diffuse * light.diffuse * dotNormalLight(vertexNormal, L);
-  ret += material.specular * light.specular * pow(dotReflectVertex(R, V), material.shininess);
-  ret += material.ambient * light.ambient;
-
-
-// ========  END OF SOLUTION - TASK 3_3-2  ======== //
-
-  return vec4(ret, 1.0);
-}
-
+//-------------------------------------------------------
 vec4 directionalLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
-
   vec3 ret = vec3(0.0);
-
-  // use the material and light structures to obtain the surface and light properties
-  // the vertexPosition and vertexNormal variables contain transformed surface position and normal
-  // store the ambient, diffuse and specular terms to the ret variable
-  // glsl provides some built-in functions, for example: reflect, normalize, pow, dot
-  // for directional lights, light.position contains the direction
-  // everything is expressed in the view coordinate system -> eye/camera is in the origin
-
-// ======== BEGIN OF SOLUTION - TASK 3_2-1 ======== //
-
-  vec3 L = normalize(light.position);						// xx light direction
-  vec3 R = reflect(-L, vertexNormal);						// xx reflection
-  vec3 V = normalize(-vertexPosition);									
-
+  vec3 L = normalize(light.position);					
+  vec3 R = reflect(-L, vertexNormal);						
+  vec3 V = normalize(-vertexPosition);
   ret += material.diffuse * light.diffuse *  dotNormalLight(vertexNormal, L);
   ret += material.specular * light.specular * pow(dotReflectVertex(R, V), material.shininess);
   ret += material.ambient * light.ambient;
-
-// ========  END OF SOLUTION - TASK 3_2-1  ======== //
-
   return vec4(ret, 1.0);
 }
-
-// hardcoded lights
-Light sun;
-float sunSpeed = 0.5f;
-Light spaceShipReflector;
-
-void setupLights() {
-
-  // set up sun parameters
-  sun.ambient  = vec3(0.0);
-  sun.diffuse  = vec3(1.0, 1.0, 0.5f);
-  sun.specular = vec3(1.0);
-
-// ======== BEGIN OF SOLUTION - TASK 3_2-2 ======== //
-
-  // calculate correct direction to the sun using the time and sunSpeed variables
-  // sun has to rotate in XZ plane in world coordinates
-  // dont forget to translate the direction to the view coordinates (using Vmatrix)
- 
-  sun.position = (Vmatrix * vec4(cos(time * sunSpeed), 0.0f, sin(time * sunSpeed), 0.0f)).xyz;
-
-// ========  END OF SOLUTION - TASK 3_2-2  ======== //
-
-  // set up reflector parameters
-  spaceShipReflector.ambient       = vec3(0.2f);
-  spaceShipReflector.diffuse       = vec3(1.0);
-  spaceShipReflector.specular      = vec3(1.0);
-  spaceShipReflector.spotCosCutOff = 0.95f;
-  spaceShipReflector.spotExponent  = 0.0;
-
-// ======== BEGIN OF SOLUTION - TASK 3_3-3 ======== //
-
-  // set properly reflector direction and position taking into account reflectorPosition
-  // and reflectorDirection uniforms
-
-  spaceShipReflector.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
-  spaceShipReflector.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
-
-// ========  END OF SOLUTION - TASK 3_3-3  ======== //
+//-------------------------------------------------------
+vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
+  vec3 ret = vec3(0.0);
+  vec3 L = normalize(light.position - vertexPosition);
+  vec3 R = reflect(-L, vertexNormal);
+  vec3 V = normalize(-vertexPosition);
+  ret += material.diffuse * light.diffuse * dotNormalLight(vertexNormal, L);
+  ret += material.specular * light.specular * pow(dotReflectVertex(R, V), material.shininess);
+  ret += material.ambient * light.ambient;
+  return vec4(ret, 1.0);
 }
-
+//-------------------------------------------------------
 void main() {
 
-  setupLights();
+	Light sun;
+	float sunSpeed = 0.5f;
+	sun.ambient  = vec3(0.0);
+	sun.diffuse  = vec3(1.0, 1.0, 0.5f);
+	sun.specular = vec3(1.0);
+	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), 0.0f, sin(time * sunSpeed), 0.0f)).xyz;
 
-  // eye-coordinates position and normal of vertex
-  vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;         // vertex in eye coordinates
-  vec3 vertexNormal   = normalize( (Vmatrix * normalMatrix * vec4(normal, 0.0) ).xyz);   // normal in eye coordinates by NormalMatrix
+	Light trainReflector;
+	trainReflector.ambient       = vec3(0.2f);
+	trainReflector.diffuse       = vec3(1.0);
+	trainReflector.specular      = vec3(1.0);
+	trainReflector.spotCosCutOff = 0.95f;
+	trainReflector.spotExponent  = 0.0;
 
-  // initialize the output color with the global ambient term
+	trainReflector.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
+	trainReflector.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
+
+
+  vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       
+  vec3 vertexNormal   = normalize( (Vmatrix * normalMatrix * vec4(normal, 0.0) ).xyz);   
+
   vec3 globalAmbientLight = vec3(0.4f);
   vec4 outputColor = vec4(material.ambient * globalAmbientLight, 0.0);
 
-  // accumulate contributions from all lights
-  outputColor += directionalLight(sun, material, vertexPosition, vertexNormal);
-  outputColor += spotLight(spaceShipReflector, material, vertexPosition, vertexNormal);
+	outputColor += directionalLight(sun, material, vertexPosition, vertexNormal);
+	outputColor += spotLight(trainReflector, material, vertexPosition, vertexNormal);
 
-  // vertex position after the projection (gl_Position is built-in output variable)
-  gl_Position = PVMmatrix * vec4(position, 1);   // out:v vertex in clip coordinates
+	gl_Position = PVMmatrix * vec4(position, 1);   
 
-  // outputs entering the fragment shader
-  color_v = outputColor;
-  texCoord_v = texCoord;
+	color_v = outputColor;
+	texCoord_v = texCoord;
+
 }

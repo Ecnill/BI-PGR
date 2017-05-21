@@ -71,6 +71,7 @@ class Scene {
 		bool isFire;
 
 		// draw methods
+		void drawWithReflection(Object *object);
 		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
 		void drawExplosion();

@@ -48,6 +48,9 @@ class LightShaderProgram: public ShaderProgram{
 		void setMaterialUniforms(Material *material);
 		void setTransformUniforms(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
+		GLint reflectorPositionLocation;
+		GLint reflectorDirectionLocation;
+
 	private:
 		GLint normalMatrixLocation; 				
 		GLint diffuseLocation;    
@@ -55,8 +58,7 @@ class LightShaderProgram: public ShaderProgram{
 		GLint specularLocation;   
 		GLint shininessLocation; 			  
 		GLint useTextureLocation; 			  
-		GLint reflectorPositionLocation;  
-		GLint reflectorDirectionLocation; 
+		
 };
 //------------------------------------------------------------
 class SkyboxShaderProgram : public ShaderProgram {

@@ -55,6 +55,7 @@ void LightShaderProgram::init(bool useLight, const std::string & fileVertexShade
 		// reflector
 		reflectorPositionLocation = glGetUniformLocation(program, "reflectorPosition");
 		reflectorDirectionLocation = glGetUniformLocation(program, "reflectorDirection");
+	
 	} else {
 		createShaderProgramFromString();
 		// get position and color attributes locations

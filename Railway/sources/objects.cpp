@@ -29,7 +29,7 @@ void TrainObject::update(float elapsedTime) {
 		// #define TRAIN_POSITION		vec3(0.7f, 0.0f, 0.1f)
 		float timeParameter = speed * (currentTime - startTime);
 		position = vec3(1.135, -0.9, 0.0);
-		modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
+		//modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
 		modelMatrix = scale(modelMatrix, vec3(size));
 		run = false;
 	}
