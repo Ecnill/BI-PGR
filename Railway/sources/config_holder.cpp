@@ -84,6 +84,10 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 	USE_LIGHT = stringToBool(configValues["USE_LIGHT"]);
 	CAMERA_SPEED = stof(configValues["CAMERA_SPEED"]);
 
+	STONE_MODEL_PATH = configValues["STONE_PATH"];
+	STONE_SIZE = stof(configValues["STONE_SIZE"]);
+	STONE_TEXTURE = configValues["STONE_TEXTURE"];
+
 	fs.close();
 }
 

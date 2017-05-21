@@ -9,7 +9,7 @@ void DynamicObject::setTime(float startTime) {
 	currentTime = startTime;
 }
 //------------------------------------------------------------
-TrainObject::TrainObject() {
+TrainObject::TrainObject() : run (false) {
 	showObjectCreatedMessage();
 
 	size = config->TRAIN_SIZE;
@@ -25,7 +25,14 @@ TrainObject::TrainObject() {
 
 void TrainObject::update(float elapsedTime) {
 	currentTime = elapsedTime;
-	
+	if (run) {
+		// #define TRAIN_POSITION		vec3(0.7f, 0.0f, 0.1f)
+		float timeParameter = speed * (currentTime - startTime);
+		position = vec3(1.135, -0.9, 0.0);
+		modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
+		modelMatrix = scale(modelMatrix, vec3(size));
+		run = false;
+	}
 }
 //------------------------------------------------------------
 HelicopterObject::HelicopterObject() {
@@ -181,12 +188,12 @@ WindmillObject::WindmillObject(vec3 position) {
 //------------------------------------------------------------
 StoneObject::StoneObject() {
 	showObjectCreatedMessage();
-	size = STONE_SIZE;
+	size = config->STONE_SIZE;
 	direction = DEFAULT_DIRECTION;
 	position = STONE_POSITION;
 
-	modelMatrix = translate(glm::mat4(1.0f), position);
-	modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
+	modelMatrix = translate(mat4(1.0f), position);
+	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 
@@ -214,7 +221,4 @@ void ExplosionObject::update(float elapsedTime) {
 		actualFrame = 1;
 		show = false;
 	}
-	/*if (currentTime > (startTime + textures.size() * frameDuration)) {
-		show = false;
-	}*/
 }

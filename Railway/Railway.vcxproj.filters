@@ -48,6 +48,9 @@
     <ClInclude Include="headers\spline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="data\models\rock\rock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\light.frag">

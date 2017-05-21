@@ -19,25 +19,18 @@ struct Material {
 	vec3		diffuse;
 	vec3		specular;
 	float		shininess;
-
 	std::string textureName;
 	GLuint		textureId;
-	bool		useTexture;
-
 	GLuint nIndices;
 	GLuint startIndex;
 	GLuint baseVertex;
 
-	Material() : textureId(0), useTexture(false) {}
+	Material() : textureId(0) {}
 
 	~Material() {
 		if (textureId != 0) { glDeleteTextures(1, &(textureId)); }
 	}
 
-	void createTexture(const char *fileName) {
-		textureId = pgr::createTexture(fileName);
-		useTexture = true;
-	}
 };
 
 #endif // __MATERIAL_H

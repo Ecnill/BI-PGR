@@ -60,6 +60,7 @@ void Scene::updateObjects(float elapsedTime) {
 	camera->currentTime = elapsedTime;
 	helicopter->update(elapsedTime);
 	explosion->update(elapsedTime);
+	train->update(elapsedTime);
 	((DumpsterType2Object*)dumpsterType2)->checkFall();
 }
 
@@ -85,17 +86,16 @@ void Scene::show() {
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, 1, -1);
 	drawMesh(factory->geometry.get(), factory->modelMatrix);
-	
 	glStencilFunc(GL_ALWAYS, 2, -1);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
+	glStencilFunc(GL_ALWAYS, 3, -1);
+	drawMesh(train->geometry.get(), train->modelMatrix);
 	glDisable(GL_STENCIL_TEST);
 
-	drawMesh(train->geometry.get(), train->modelMatrix);
-
+	
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
 	drawMesh(helicopter->geometry.get(), helicopter->modelMatrix);
-	
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
@@ -109,19 +109,14 @@ void Scene::show() {
 	for (auto trackPart : track) {
 		drawMesh(trackPart->geometry.get(), trackPart->modelMatrix);
 	}
-
-
 	drawExplosion();
-
-
-	//drawMesh(stone->geometry, stone->modelMatrix);
+	drawMesh(rock->geometry.get(), rock->modelMatrix);
 }
 
 void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 	glUseProgram(lightProgram.program);
 	// setting matrices to the vertex & fragment shader
 	lightProgram.setTransformUniforms(modelMatrix, camera->view, camera->projection);
-
 	for (auto it : geometry->subMeshVector) {
 		lightProgram.setMaterialUniforms(it->material);
 		glBindVertexArray(it->vertexArrayObject);
@@ -133,7 +128,6 @@ void Scene::drawMesh(MeshGeometry *geometry, const glm::mat4 &modelMatrix) {
 void Scene::drawSkybox() {
 	glUseProgram(skyboxProgram.program);
 	glUniformMatrix4fv(skyboxProgram.inversePVmatrixLocation, 1, GL_FALSE, glm::value_ptr(skybox->getInversePVmatrix(camera->view, camera->projection)));
-
 	glUniform1i(skyboxProgram.skyboxSamplerLocation, 0);
 	// draw "skybox" rendering 2 triangles covering the far plane
 	glBindVertexArray(skybox->geometry->vertexArrayObject);
@@ -164,11 +158,9 @@ void Scene::drawExplosion() {
 		glUniform1f(explosionProgram.frameDurationLocation, explosion->frameDuration);
 
 		auto geometry = explosion->textures[explosion->actualFrame++];
-
 		glBindVertexArray(geometry->vertexArrayObject);
 		glBindTexture(GL_TEXTURE_2D, geometry->texture);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, geometry->numTriangles);
-
 		resetProgram();
 		glDisable(GL_BLEND);
 	}
@@ -185,10 +177,20 @@ void Scene::fallDumpster() {
 
 void Scene::startFire() {
 	explosion->show = true;
-	isFire = true;
+	//isFire = true;
+}
+
+void Scene::goTrain() {
+	((TrainObject*)train)->run = true;
 }
 
 void Scene::initModels() {
+	/*stone = new StoneObject;
+	stone->geometry = ObjectMeshGeometry::loadMultiMesh(config->STONE_MODEL_PATH, lightProgram);*/
+
+	rock = new StoneObject;
+	rock->geometry = CodeMeshGeometry::loadCodeMesh(lightProgram, config->STONE_TEXTURE, stoneTriangles, stoneVertices);
+
 	explosion = new ExplosionObject;
 	for (size_t i = 1; i < explosion->countFrames; ++i) {
 		std::string textureName;
@@ -255,9 +257,6 @@ void Scene::initModels() {
 		trackPart->geometry = trackGeomtery;
 		track.push_back(trackPart);
 	} 
-
-	//stone = new StoneObject();
-//	stone->geometry = CodeMeshGeometry::loadCodeMesh(this->lightProgram, stoneTriangles, stoneVertices);
 }
 
 void Scene::resetProgram() {
@@ -285,11 +284,11 @@ void Scene::deleteModels() {
 	delete houseType1; 
 	delete houseType2; 
 	delete explosion;
-	delete stone; 
-	for (auto ob : trainFreightcars) { delete ob; ob = nullptr; }
+	delete rock; 
+	for (auto ob : trainFreightcars) { delete ob; }
 	trainFreightcars.clear();
-	for (auto ob : windmills) { delete ob; ob = nullptr; }
+	for (auto ob : windmills) { delete ob; }
 	windmills.clear();
-	for (auto ob : track) { delete ob; ob = nullptr; }
+	for (auto ob : track) { delete ob; }
 	track.clear();
 }

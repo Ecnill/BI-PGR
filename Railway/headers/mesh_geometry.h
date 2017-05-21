@@ -43,7 +43,7 @@ class ObjectMeshGeometry : public MeshGeometry {
 //------------------------------------------------------------
 class CodeMeshGeometry : public MeshGeometry {
 	public:
-		static CodeMeshGeometry *loadCodeMesh(LightShaderProgram &shader, const std::vector<unsigned> &triangles, const std::vector<float> &vertices);
+		static shared_ptr<CodeMeshGeometry> loadCodeMesh(LightShaderProgram &shader, std::string &textureName, const std::vector<unsigned> &triangles, const std::vector<float> &vertices);
 };
 //------------------------------------------------------------
 class DynamicTextureGeometry : public MeshGeometry {

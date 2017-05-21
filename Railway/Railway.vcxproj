@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="data\models\rock\rock.h" />
     <ClInclude Include="headers\callbacks.h" />
     <ClInclude Include="headers\camera.h" />
     <ClInclude Include="headers\config_holder.h" />

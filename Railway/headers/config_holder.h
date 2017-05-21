@@ -68,6 +68,10 @@ class ConfigHolder {
 		
 		float WINDMILL_SIZE;
 		string WINDMILL_MODEL_PATH;
+
+		float STONE_SIZE;
+		string STONE_MODEL_PATH;
+		string STONE_TEXTURE;
 		
 		vector<string> SKYBOX_CUBE_TEXTURE_FILES;
 

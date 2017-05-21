@@ -28,6 +28,7 @@ class Scene {
 		// interactivity 
 		void fallDumpster();
 		void startFire();
+		void goTrain();
 
 		SceneState sceneState;
 		Camera *camera;
@@ -47,6 +48,10 @@ class Scene {
 		DynamicObject *helicopter;
 		DynamicObject *train;
 
+		Object *rock;
+
+		Object *stone;
+
 		Object *trainFlatcar;
 		Object *factory;
 		Object *dumpsterType1;
@@ -55,7 +60,6 @@ class Scene {
 		Object *houseType2;
 
 		ExplosionObject *explosion;
-		StoneObject *stone;
 		SkyBoxObject *skybox;
 
 		std::vector<Object*> trainFreightcars;

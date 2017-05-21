@@ -14,15 +14,13 @@ using namespace glm;
 #define TRAIN_POSITION		vec3(0.7f, 0.0f, 0.1f)
 #define HELICOPTER_POSITION	vec3(2.7f, 0.0f, 1.5f)
 #define FLATCAR_POSITION	vec3(0.4f, 0.5f, 0.1f)
-#define DUMPSTER_1_POSITION	vec3(0.5f, -0.5f, 0.0f)
+#define DUMPSTER_1_POSITION	vec3(1.5f, -1.8f, 0.1f)
 #define DUMPSTER_2_POSITION	vec3(0.0f, 0.5f, 0.0f)
 #define HOUSE_1_POSITION	vec3(-1.0f, 0.7f, 0.0f)
 #define HOUSE_2_POSITION	vec3(-1.0f, -0.3f, 0.0f)
+#define STONE_POSITION		vec3(0.7f, 0.0f, 0.1f)
 
 #define HELICOPTER_CURVE_SIZE 100
-
-#define STONE_SIZE			22.5f
-#define STONE_POSITION		vec3(-10.0f, 0.0f, 0.0f)
 //------------------------------------------------------------
 class Object {
 	public:
@@ -58,7 +56,7 @@ class TrainObject : public DynamicObject {
 		void update(float elapsedTime);
 		std::string getObjectName() { return "TrainObject"; }
 
-		bool destroyed;
+		bool run;
 };
 //------------------------------------------------------------
 class HelicopterObject : public DynamicObject {
@@ -149,9 +147,9 @@ class ExplosionObject : public DynamicObject {
 		void update(float elapsedTime);
 
 		bool show;
-		int   countFrames;
+		unsigned countFrames;
 		float frameDuration;
-		int   actualFrame;
+		unsigned actualFrame;
 		std::vector<DynamicTextureGeometry*> textures;
 
 		const vector<float> explosionNumQuadVertices = {

@@ -147,19 +147,20 @@ Material *ObjectMeshGeometry::getSingleMeshMaterial(const aiMaterial *mat, const
 	return material;
 }
 //------------------------------------------------------------
-CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, const std::vector<unsigned> &triangles, const std::vector<float> &vertices) {
-	CodeMeshGeometry *geometry = new CodeMeshGeometry;
+shared_ptr<CodeMeshGeometry> CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, std::string &textureName, const std::vector<unsigned> &triangles, const std::vector<float> &vertices) {
+	shared_ptr<CodeMeshGeometry> geometry (new CodeMeshGeometry);
+	SubMeshGeometry *s = new SubMeshGeometry;
+	
+	glGenVertexArrays(1, &(s->vertexArrayObject));
+	glBindVertexArray(s->vertexArrayObject);
 
-	glGenVertexArrays(1, &((geometry)->vertexArrayObject));
-	glBindVertexArray((geometry)->vertexArrayObject);
-
-	glGenBuffers(1, &((geometry)->vertexBufferObject));
-	glBindBuffer(GL_ARRAY_BUFFER, (geometry)->vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &(s->vertexBufferObject));
+	glBindBuffer(GL_ARRAY_BUFFER, s->vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
 	// copy our temporary index array to opengl and free the array
-	glGenBuffers(1, &((geometry)->elementBufferObject));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (geometry)->elementBufferObject);
+	glGenBuffers(1, &(s->elementBufferObject));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->elementBufferObject);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(shader.posLocation);
@@ -177,18 +178,18 @@ CodeMeshGeometry *CodeMeshGeometry::loadCodeMesh(LightShaderProgram &shader, con
 	}
 	glBindVertexArray(0);
 
-	geometry->numTriangles = triangles.size() / 3;
+	s->numTriangles = triangles.size() / 3;
 
 	Material *m = new Material;
 	m->ambient = glm::vec3(0.0f, 1.0f, 1.0f);
 	m->diffuse = glm::vec3(0.0f, 1.0f, 1.0f);
 	m->specular = glm::vec3(0.0f, 1.0f, 1.0f);
 	m->shininess = 10.0f;
-	m->createTexture("./data/models/rock/Rock5.jpg");
-
-	SubMeshGeometry *s = new SubMeshGeometry;
+	m->textureId = pgr::createTexture(textureName);
 	s->material = m;
 	geometry->subMeshVector.push_back(s);
+
+	CHECK_GL_ERROR();
 	return geometry;
 }
 //------------------------------------------------------------
