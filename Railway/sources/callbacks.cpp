@@ -27,6 +27,11 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 		}
 		case 'f': {
 			scene->isFog = !scene->isFog;
+			break;
+		}
+		case 's': {
+			scene->isSpotLight = !scene->isSpotLight;
+			break;
 		}
 		default:
 			break;

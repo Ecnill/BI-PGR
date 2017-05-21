@@ -26,7 +26,6 @@ void Scene::start() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	useLight = config->USE_LIGHT;
-	isFog = false;
 	initShaders();
 	restart();
 }
@@ -40,6 +39,8 @@ void Scene::initShaders() {
 void Scene::restart() {
 	config->reloadConfigFile();
 	useLight = config->USE_LIGHT;
+	isFog = false;
+	isSpotLight = false;
 	deleteModels();
 	if (camera != nullptr) delete camera;
 	sceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME);
@@ -89,14 +90,14 @@ void Scene::show() {
 	glStencilFunc(GL_ALWAYS, 2, -1);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
 	glStencilFunc(GL_ALWAYS, 3, -1);
-	drawWithReflection(train);
+	drawWithSpotLight(train);
 	glDisable(GL_STENCIL_TEST);
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	drawMesh(dumpsterType1->geometry.get(), dumpsterType1->modelMatrix);
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
-	drawWithReflection(helicopter);
+	drawWithSpotLight(helicopter);
 
 	for (auto car : trainFreightcars) {
 		drawMesh(car->geometry.get(), car->modelMatrix);
@@ -112,12 +113,14 @@ void Scene::show() {
 	drawMesh(rock->geometry.get(), rock->modelMatrix);
 }
 
-void Scene::drawWithReflection(Object *object) {
-	glUseProgram(lightProgram.program);
-	glUniform1f(lightProgram.timeLocation, sceneState.elapsedTime);
-	glUniform3fv(lightProgram.reflectorPositionLocation, 1, glm::value_ptr(object->position));
-	glUniform3fv(lightProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->direction));
-	glUseProgram(0);
+void Scene::drawWithSpotLight(Object *object) {
+	if (isSpotLight) {
+		glUseProgram(lightProgram.program);
+		glUniform1f(lightProgram.timeLocation, sceneState.elapsedTime);
+		glUniform3fv(lightProgram.reflectorPositionLocation, 1, glm::value_ptr(object->position));
+		glUniform3fv(lightProgram.reflectorDirectionLocation, 1, glm::value_ptr(object->direction));
+		glUseProgram(0);
+	}
 	drawMesh(object->geometry.get(), object->modelMatrix);
 }
 

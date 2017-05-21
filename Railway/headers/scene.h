@@ -16,6 +16,7 @@ using namespace glm;
 class Scene {
 
 	public:
+		Scene() : isFog(false), isSpotLight(false) {}
 		static Scene *getInstance();
 		~Scene();
 		bool init(const std::string &configFilePath);
@@ -34,6 +35,7 @@ class Scene {
 		Camera *camera;
 
 		bool isFog;
+		bool isSpotLight;
 
 	private:
 		static Scene *instance;
@@ -73,7 +75,7 @@ class Scene {
 		bool isFire;
 
 		// draw methods
-		void drawWithReflection(Object *object);
+		void drawWithSpotLight(Object *object);
 		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
 		void drawExplosion();
