@@ -81,7 +81,6 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 	WINDMILL_MODEL_PATH = configValues["WINDMILL_MODEL_PATH"];
 	WINDMILL_SIZE = stof(configValues["WINDMILL_SIZE"]);
 
-	USE_LIGHT = stringToBool(configValues["USE_LIGHT"]);
 	CAMERA_SPEED = stof(configValues["CAMERA_SPEED"]);
 
 	STONE_MODEL_PATH = configValues["STONE_PATH"];

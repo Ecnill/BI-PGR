@@ -91,16 +91,9 @@ shared_ptr<ObjectMeshGeometry> ObjectMeshGeometry::loadMultiMesh(const string &f
 		glBindBuffer(GL_ARRAY_BUFFER, (subMesh)->vertexBufferObject);
 		glEnableVertexAttribArray(shader.posLocation);
 		glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		if (ConfigHolder::getInstance()->USE_LIGHT) {
-			glEnableVertexAttribArray(shader.normalLocation);
-			glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float) * mesh->mNumVertices));
-		} else {
-			glDisableVertexAttribArray(shader.colorLocation);
-			// following line is problematic on AMD/ATI graphic cards
-			// -> if you see black screen (no objects at all) than try to set color manually in vertex shader to see at least something
-			glVertexAttrib3f(shader.colorLocation, subMesh->material->color.r, subMesh->material->color.g, subMesh->material->color.b);
-		}
+		glEnableVertexAttribArray(shader.normalLocation);
+		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float) * mesh->mNumVertices));
+		
 		glEnableVertexAttribArray(shader.texCoordLocation);
 		glVertexAttribPointer(shader.texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)(6 * sizeof(float) * mesh->mNumVertices));
 		CHECK_GL_ERROR();
@@ -167,15 +160,9 @@ shared_ptr<CodeMeshGeometry> CodeMeshGeometry::loadCodeMesh(LightShaderProgram &
 	// vertices of triangles - start at the beginning of the array
 	glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
 
-	if (ConfigHolder::getInstance()->USE_LIGHT) {
-		glEnableVertexAttribArray(shader.normalLocation);
-		// normal of vertex starts after the color (interlaced array)
-		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	} else {
-		glEnableVertexAttribArray(shader.colorLocation);
-		// color of vertex starts after the position (interlaced arrays)
-		glVertexAttribPointer(shader.colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	}
+	glEnableVertexAttribArray(shader.normalLocation);
+	// normal of vertex starts after the color (interlaced array)
+	glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glBindVertexArray(0);
 
 	s->numTriangles = triangles.size() / 3;

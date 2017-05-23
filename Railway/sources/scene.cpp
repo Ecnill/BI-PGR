@@ -25,20 +25,18 @@ void Scene::start() {
 	glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	useLight = config->USE_LIGHT;
 	initShaders();
 	restart();
 }
 
 void Scene::initShaders() {
-	lightProgram.init(useLight, config->SHADER_LIGHT.first, config->SHADER_LIGHT.second);
+	lightProgram.init(config->SHADER_LIGHT.first, config->SHADER_LIGHT.second);
 	skyboxProgram.init(config->SHADER_SKYBOX.first, config->SHADER_SKYBOX.second);
 	explosionProgram.init(isFire, config->SHADER_EXPLOSION.first, config->SHADER_EXPLOSION.second);
 }
 
 void Scene::restart() {
 	config->reloadConfigFile();
-	useLight = config->USE_LIGHT;
 	isFog = false;
 	isSpotLight = false;
 	isPointLight = false;

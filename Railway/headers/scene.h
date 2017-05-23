@@ -75,7 +75,6 @@ class Scene {
 		std::vector<Object*> track;
 
 		// flags
-		bool useLight;
 		bool isFire;
 
 		// draw methods

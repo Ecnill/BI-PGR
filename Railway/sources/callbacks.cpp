@@ -201,23 +201,19 @@ void onMouseButton(int button, int state, int x, int y) {
 		glReadPixels(x, config->WINDOW_HEIGHT - 1 - y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, &id);
 		switch (id) {
 			case 1: {
-				std::cout << "1\n";
 				scene->startFire();
 				break;
 			}
 			case 2: {
-				std::cout << "2\n";
 				scene->fallDumpster();
 				break;
 			}
 			case 3: {
-				std::cout << "3\n";
 				scene->goTrain();
 				break;
 			}
 			case 4: {
-				std::cout << "4\n";
-				scene->camera->dropCameraTo(scene->dumpsterType1->position);
+				scene->camera->lookAtObject(scene->dumpsterType1->position);
 				break;
 			}
 			default:
@@ -237,8 +233,8 @@ int buildPopupMenu(void) {
 void selectFromMenuCallback(int command) {
 	switch (command) {
 		case MENU_LIGHTING: {
-			config->USE_LIGHT = !config->USE_LIGHT;
-			scene->restart();
+			scene->isDay = !scene->isDay;
+			//scene->restart();
 			break;
 		}
 		case MENU_EXIT:

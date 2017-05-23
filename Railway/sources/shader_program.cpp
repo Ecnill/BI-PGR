@@ -9,18 +9,6 @@ GLuint ShaderProgram::createShaderProgramFromFile(const std::string &fileVertexS
 	return program;
 }
 
-void ShaderProgram::createShaderProgramFromString() {
-	createShaderProgramFromString(colorVertexShaderSrc, colorFragmentShaderSrc);
-}
-
-void ShaderProgram::createShaderProgramFromString(const std::string &vertexShaderString, const std::string &fragmentShaderString) {
-	std::vector<GLuint> shaderList;
-	shaderList.push_back(pgr::createShaderFromSource(GL_VERTEX_SHADER, vertexShaderString));
-	shaderList.push_back(pgr::createShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderString));
-	program = pgr::createProgram(shaderList);
-	CHECK_GL_ERROR();
-}
-
 void LightShaderProgram::setTransformUniforms(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) {
 	glm::mat4 PVM = projection * view * model;
 	glUniformMatrix4fv(PVMmatrixLocation, 1, GL_FALSE, glm::value_ptr(PVM));
@@ -31,49 +19,38 @@ void LightShaderProgram::setTransformUniforms(const glm::mat4 &model, const glm:
 	CHECK_GL_ERROR();
 }
 
-void LightShaderProgram::init(bool useLight, const std::string & fileVertexShader, const std::string & fileFragmentShader) {
-	if (useLight) {
-		program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
-		// get vertex attributes locations, if the shader does not have this uniform -> return -1
-		posLocation = glGetAttribLocation(program, "position");
-		normalLocation = glGetAttribLocation(program, "normal");
-		texCoordLocation = glGetAttribLocation(program, "texCoord");
-		// get uniforms locations
-		PVMmatrixLocation = glGetUniformLocation(program, "PVMmatrix");
-		VmatrixLocation = glGetUniformLocation(program, "Vmatrix");
-		MmatrixLocation = glGetUniformLocation(program, "Mmatrix");
-		normalMatrixLocation = glGetUniformLocation(program, "normalMatrix");
-		timeLocation = glGetUniformLocation(program, "time");
+void LightShaderProgram::init(const std::string & fileVertexShader, const std::string & fileFragmentShader) {
+	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
+	// get vertex attributes locations, if the shader does not have this uniform -> return -1
+	posLocation = glGetAttribLocation(program, "position");
+	normalLocation = glGetAttribLocation(program, "normal");
+	texCoordLocation = glGetAttribLocation(program, "texCoord");
+	// get uniforms locations
+	PVMmatrixLocation = glGetUniformLocation(program, "PVMmatrix");
+	VmatrixLocation = glGetUniformLocation(program, "Vmatrix");
+	MmatrixLocation = glGetUniformLocation(program, "Mmatrix");
+	normalMatrixLocation = glGetUniformLocation(program, "normalMatrix");
+	timeLocation = glGetUniformLocation(program, "time");
 
-		// material
-		ambientLocation = glGetUniformLocation(program, "material.ambient");
-		diffuseLocation = glGetUniformLocation(program, "material.diffuse");
-		specularLocation = glGetUniformLocation(program, "material.specular");
-		shininessLocation = glGetUniformLocation(program, "material.shininess");
-		// texture
-		texSamplerLocation = glGetUniformLocation(program, "texSampler");
-		useTextureLocation = glGetUniformLocation(program, "material.useTexture");
-		// reflector
-		reflectorPositionLocation = glGetUniformLocation(program, "reflectorPosition");
-		reflectorDirectionLocation = glGetUniformLocation(program, "reflectorDirection");
-		// fog
-		fogActive = glGetUniformLocation(program, "fogActive");
+	// material
+	ambientLocation = glGetUniformLocation(program, "material.ambient");
+	diffuseLocation = glGetUniformLocation(program, "material.diffuse");
+	specularLocation = glGetUniformLocation(program, "material.specular");
+	shininessLocation = glGetUniformLocation(program, "material.shininess");
+	// texture
+	texSamplerLocation = glGetUniformLocation(program, "texSampler");
+	useTextureLocation = glGetUniformLocation(program, "material.useTexture");
+	// reflector
+	reflectorPositionLocation = glGetUniformLocation(program, "reflectorPosition");
+	reflectorDirectionLocation = glGetUniformLocation(program, "reflectorDirection");
+	// fog
+	fogActive = glGetUniformLocation(program, "fogActive");
 
-		// lights
-		dayActive = glGetUniformLocation(program, "dayActive");
-
-		spotLightActive = glGetUniformLocation(program, "spotLightActive");
-		pointLightPosition = glGetUniformLocation(program, "pointLightPosition");
-		pointLightDirection = glGetUniformLocation(program, "pointLightDirection");
-	
-	} else {
-		createShaderProgramFromString();
-		// get position and color attributes locations
-		posLocation = glGetAttribLocation(program, "position");
-		colorLocation = glGetAttribLocation(program, "color");
-		// get uniforms locations
-		PVMmatrixLocation = glGetUniformLocation(program, "PVMmatrix");
-	}
+	// lights
+	dayActive = glGetUniformLocation(program, "dayActive");
+	spotLightActive = glGetUniformLocation(program, "spotLightActive");
+	pointLightPosition = glGetUniformLocation(program, "pointLightPosition");
+	pointLightDirection = glGetUniformLocation(program, "pointLightDirection");
 }
 
 void LightShaderProgram::setMaterialUniforms(Material *material) {

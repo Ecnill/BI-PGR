@@ -69,7 +69,7 @@ void Camera::lookDown() {
 	direction.z = viewAngleY / 360;
 }
 
-void Camera::dropCameraTo(vec3 newPosition) {
+void Camera::lookAtObject(vec3 newPosition) {
 	position.x = newPosition.x + 0.5;
 	position.y = newPosition.y - 0.5;
 	position.z = newPosition.z + 0.1;

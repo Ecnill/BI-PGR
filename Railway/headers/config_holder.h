@@ -24,7 +24,6 @@ class ConfigHolder {
 		string WINDOW_TITLE;
 
 		// program variables
-		bool USE_LIGHT;
 		float CAMERA_SPEED;
 
 		// shaders
