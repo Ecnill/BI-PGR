@@ -16,7 +16,7 @@ using namespace glm;
 
 #define REFRESH_INTERVAL 33
 
-enum { MENU_LIGHTING = 1, MENU_EXIT };
+enum { MENU_LIGHTING, MENU_EXPLOSION, MENU_CAMERA_TOP, MENU_CAMERA_TRAIN, MENU_CAMERA_FREE, MENU_CAMERA_HELICOPTER, MENU_EXIT };
 
 void manageCallbacks();		// calls all callbacks except finalize
 

@@ -226,6 +226,10 @@ void onMouseButton(int button, int state, int x, int y) {
 int buildPopupMenu(void) {
 	int menu = glutCreateMenu(selectFromMenuCallback);
 	glutAddMenuEntry("Turn on/off light", MENU_LIGHTING);
+	glutAddMenuEntry("Make explosion!", MENU_EXPLOSION);
+	glutAddMenuEntry("Camera top view", MENU_CAMERA_TOP);
+	glutAddMenuEntry("Camera at train view", MENU_CAMERA_TRAIN);
+	glutAddMenuEntry("Camera from helicopter", MENU_CAMERA_HELICOPTER);
 	glutAddMenuEntry("Exit", MENU_EXIT);
 	return menu;
 }
@@ -234,13 +238,33 @@ void selectFromMenuCallback(int command) {
 	switch (command) {
 		case MENU_LIGHTING: {
 			scene->isDay = !scene->isDay;
-			//scene->restart();
 			break;
 		}
-		case MENU_EXIT:
+		case MENU_EXPLOSION: {
+			scene->startFire();
+			break;
+		}
+		case MENU_CAMERA_TOP: {
+			scene->camera->actualState = scene->camera->TOP;
+			break;
+		}
+		case MENU_CAMERA_TRAIN: {
+			scene->camera->actualState = scene->camera->AT_TRAIN;
+			break;
+		}
+		case MENU_CAMERA_FREE: {
+			scene->camera->actualState = scene->camera->FROM_HELICOPTER;
+			break;
+		}
+		case MENU_CAMERA_HELICOPTER: {
+			scene->camera->actualState = scene->camera->FROM_HELICOPTER;
+			break;
+		}
+		case MENU_EXIT: {
 			glutLeaveMainLoop();
 			break;
 		}
+	}
 }
 
 void finalizeCallback() {
