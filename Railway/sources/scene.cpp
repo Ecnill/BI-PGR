@@ -65,6 +65,9 @@ void Scene::updateObjects(float elapsedTime) {
 	explosion->update(elapsedTime);
 	train->update(elapsedTime);
 	((DumpsterType2Object*)dumpsterType2)->checkFall();
+	if (explosion->finish) {
+		((FactoryObject*)factory)->destroyed = true;
+	}
 }
 
 void Scene::show() {
@@ -87,16 +90,18 @@ void Scene::show() {
 	glClearStencil(0);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	glStencilFunc(GL_ALWAYS, 1, -1);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	drawMesh(factory->geometry.get(), factory->modelMatrix);
-	glStencilFunc(GL_ALWAYS, 2, -1);
+	glStencilFunc(GL_ALWAYS, 2, 0xFF);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
-	glStencilFunc(GL_ALWAYS, 3, -1);
+	glStencilFunc(GL_ALWAYS, 3, 0xFF);
 	drawWithSpotLight(train);
-	glDisable(GL_STENCIL_TEST);
-	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 	
 	drawWithPointLight(dumpsterType1);
+	glDisable(GL_STENCIL_TEST);
+	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
+
+	
 
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
@@ -140,14 +145,7 @@ void Scene::drawWithPointLight(Object *object) {
 		glUniform3fv(lightProgram.pointLightDirection, 1, glm::value_ptr(object->direction));
 		CHECK_GL_ERROR();
 	}
-
-	//glUniform3fv(bmwLightPositionLoc, 1, glm::value_ptr(lightPosition));
-	//glUniform3fv(bmwLightDirectionLoc, 1, glm::value_ptr(direction));
-	//glUniform1f(bmwLightCutOffLoc, cutOff);
-	//glUniform1f(bmwLightExponentLoc, exponent);
-	//glUniform1f(bmwLightEnabledLoc, lightEnabled);
-
-
+	glStencilFunc(GL_ALWAYS, 4, 0xFF);
 	drawMesh(object->geometry.get(), object->modelMatrix);
 }
 
@@ -178,7 +176,7 @@ void Scene::drawSkybox() {
 }
 
 void Scene::drawExplosion() {
-	if (explosion->show) {
+	if (explosion->show && !((FactoryObject*)factory)->destroyed ) {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glUseProgram(explosionProgram.program);
@@ -243,6 +241,11 @@ void Scene::initModels() {
 		textureName += std::to_string(i) + ".png";
 		explosion->textures.push_back(DynamicTextureGeometry::loadTextureGeometry(explosionProgram, textureName, explosion->explosionNumQuadVertices));
 	}
+
+	glClearStencil(0);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 
 	train = new TrainObject;
 	train->geometry = ObjectMeshGeometry::loadMultiMesh(config->TRAIN_MODEL_PATH, this->lightProgram);

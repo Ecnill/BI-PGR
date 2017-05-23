@@ -69,6 +69,14 @@ void Camera::lookDown() {
 	direction.z = viewAngleY / 360;
 }
 
+void Camera::dropCameraTo(vec3 newPosition) {
+	position.x = newPosition.x + 0.5;
+	position.y = newPosition.y - 0.5;
+	position.z = newPosition.z + 0.1;
+	viewAngleX += 250.0;
+	direction = vec3(cos(radians(viewAngleX)), sin(radians(viewAngleX)), 0.0f);
+}
+
 void Camera::goForward(float timeDelta) {
 	position = checkBorders(timeDelta, 1.0);
 	direction = normalize(vec3(cos(radians(viewAngleX)), sin(radians(viewAngleX)), 0.0f));

@@ -36,6 +36,8 @@ class Camera {
 		void lookUp();
 		void lookDown();
 
+		void dropCameraTo(vec3 newPosition);
+
 		void setViewMatrix();
 		void setProjectionMatrix(int windowWidth, int windowHeight);
 

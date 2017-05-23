@@ -17,6 +17,8 @@ TrainObject::TrainObject() : run (false) {
 	startPosition = position = TRAIN_POSITION;
 	speed = config->TRAIN_SPEED;
 
+	initCurveData();
+
 	modelMatrix = translate(mat4(1.0f), position);
 	modelMatrix = rotate(modelMatrix, -65.0f, vec3(0, 0, 1));
 	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
@@ -24,15 +26,34 @@ TrainObject::TrainObject() : run (false) {
 }
 
 void TrainObject::update(float elapsedTime) {
-	currentTime = elapsedTime;
 	if (run) {
-		// #define TRAIN_POSITION		vec3(0.7f, 0.0f, 0.1f)
-		float timeParameter = speed * (currentTime - startTime);
-		position = vec3(1.135, -0.9, 0.0);
-		//modelMatrix = alignObject(position, direction, vec3(0.0f, 0.0f, 1.0f));
+		/*currentTime = elapsedTime;
+		float timeParam = speed * (currentTime - startTime);
+
+		position.y -= timeParam;
+
+		modelMatrix = translate(mat4(1.0f), position);
+		modelMatrix = rotate(modelMatrix, -65.0f, vec3(0, 0, 1));
+		modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
 		modelMatrix = scale(modelMatrix, vec3(size));
+*/
 		run = false;
 	}
+}
+void TrainObject::initCurveData() {
+	/*curveData.push_back(vec3((0.725, -0.1, startPosition.z)));
+	curveData.push_back(vec3((0.75, -0.5, startPosition.z)));
+	curveData.push_back(vec3((0.8, -0.75, startPosition.z)));
+	curveData.push_back(vec3((0.85, -0.8, startPosition.z)));
+	curveData.push_back(vec3((0.9, -0.85, startPosition.z)));
+	curveData.push_back(vec3((0.95, -0.9, startPosition.z)));
+	curveData.push_back(vec3((1.0, -0.95, startPosition.z)));
+	curveData.push_back(vec3((1.25, -1.0, startPosition.z)));
+	curveData.push_back(vec3((1.5, -1.25, startPosition.z)));
+	curveData.push_back(vec3((1.6, -1.5, startPosition.z)));
+	curveData.push_back(vec3((1.7, -2.0, startPosition.z)));
+	curveData.push_back(vec3((1.8, -2.2, startPosition.z)));
+	curveData.push_back(vec3((1.95, -2.5, startPosition.z)));*/
 }
 //------------------------------------------------------------
 HelicopterObject::HelicopterObject() {
@@ -93,7 +114,7 @@ FreightcarObject::FreightcarObject(vec3 position) {
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
 //------------------------------------------------------------
-FactoryObject::FactoryObject() {
+FactoryObject::FactoryObject() : destroyed(false) {
 	showObjectCreatedMessage();
 	size = config->FACTORY_SIZE;
 	direction = DEFAULT_DIRECTION;
@@ -205,7 +226,7 @@ mat4 SkyBoxObject::getInversePVmatrix(mat4 view, mat4 projection) {
 	return inverse(projection * viewRotation);
 }
 
-ExplosionObject::ExplosionObject() : show(false) {
+ExplosionObject::ExplosionObject() : show(false), finish(false) {
 	showObjectCreatedMessage();
 	size = config->FACTORY_SIZE;
 	direction = DEFAULT_DIRECTION;
@@ -216,9 +237,21 @@ ExplosionObject::ExplosionObject() : show(false) {
 }
 
 void ExplosionObject::update(float elapsedTime) {
-	currentTime = elapsedTime;
-	if (actualFrame >= countFrames - 1) {
-		actualFrame = 1;
-		show = false;
+	if (show) { 
+		currentTime = elapsedTime;
+		if (actualFrame >= countFrames - 1) {
+			actualFrame = 1;
+			show = false;
+		}
+		if (actualFrame >= countFrames / 3) {
+			position = vec3(0.5f, 0.1f, 0.4f);
+			direction = vec3(1.0f, 0.0f, 1.0f);
+		}
+		if (actualFrame >= countFrames  / 2) {
+			position = vec3(0.7f, 0.0f, 0.1f);
+		}
+		if (actualFrame >= (countFrames - 40)) {
+			finish = true;
+		}
 	}
 }

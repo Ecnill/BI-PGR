@@ -39,6 +39,8 @@ class Scene {
 		bool isDay;
 		bool isPointLight;
 
+		Object *dumpsterType1;
+
 	private:
 		static Scene *instance;
 		
@@ -60,7 +62,7 @@ class Scene {
 
 		Object *trainFlatcar;
 		Object *factory;
-		Object *dumpsterType1;
+		
 		Object *dumpsterType2;
 		Object *houseType1;
 		Object *houseType2;

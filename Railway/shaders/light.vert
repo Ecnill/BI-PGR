@@ -92,11 +92,11 @@ vec4 pointLight(Light light, Material material, vec3 vertexPosition, vec3 vertex
 //-------------------------------------------------------
 void main() {
 	Light sun;
-	float sunSpeed = 0.5f;
+	float sunSpeed = 0.005f;
 	sun.ambient  = vec3(0.0);
 	sun.diffuse  = vec3(1.0, 1.0, 0.5f);
 	sun.specular = vec3(1.0);
-	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), 0.0f, sin(time * sunSpeed), 0.0f)).xyz;
+	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), -2.50f, sin(time * sunSpeed), 10.0f)).xyz;
 
 	Light trainReflector;
 	trainReflector.ambient       = vec3(0.2f);
@@ -112,7 +112,7 @@ void main() {
 	point.diffuse		= vec3(0.03f);
 	point.specular		= vec3(0.3f);
 	point.spotExponent	= 0.2f;
-	point.position		=  (Vmatrix * vec4(pointLightPosition, 5.0f)).xyz;
+	point.position		=  (Vmatrix * vec4(pointLightPosition, 10.0f)).xyz;
 	point.spotDirection	= normalize((Vmatrix * vec4(pointLightDirection, 0.0f)).xyz);;
 
 	vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       

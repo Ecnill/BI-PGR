@@ -36,7 +36,6 @@ class Object {
 
 		ConfigHolder *config = ConfigHolder::getInstance();
 };
-//------------------------------------------------------------
 class DynamicObject : public Object {
 	public:
 		void setTime(float startTime);
@@ -45,27 +44,34 @@ class DynamicObject : public Object {
 		float speed;
 		float currentTime;
 		float startTime;
-		
+};
+
+class MovingObject : public DynamicObject {
+	public:
+		std::vector<vec3> curveData;
+
 	protected:
+		virtual void initCurveData() = 0;
 		vec3 startPosition;
 };
 //------------------------------------------------------------
-class TrainObject : public DynamicObject {
+class TrainObject : public MovingObject {
 	public:
 		TrainObject();
 		void update(float elapsedTime);
 		std::string getObjectName() { return "TrainObject"; }
 
 		bool run;
+	private:
+		void initCurveData();
 };
 //------------------------------------------------------------
-class HelicopterObject : public DynamicObject {
+class HelicopterObject : public MovingObject {
 	public:
 		HelicopterObject();
 		void update(float elapsedTime);
 		std::string getObjectName() { return "HelicopterObject"; }
-		std::vector<vec3> curveData;
-
+		
 	private:
 		void initCurveData();
 };	
@@ -86,6 +92,8 @@ class FactoryObject : public Object {
 	public:
 		FactoryObject();
 		std::string getObjectName() { return "FactoryObject"; }
+
+		bool destroyed;
 };
 //------------------------------------------------------------
 class TrackObject : public Object {
@@ -142,7 +150,6 @@ class SkyBoxObject : public Object {
 		bool fog;
 };
 
-
 class ExplosionObject : public DynamicObject {
 	public:
 		ExplosionObject();
@@ -150,6 +157,7 @@ class ExplosionObject : public DynamicObject {
 		void update(float elapsedTime);
 
 		bool show;
+		bool finish;
 		unsigned countFrames;
 		float frameDuration;
 		unsigned actualFrame;
