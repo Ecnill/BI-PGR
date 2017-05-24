@@ -180,7 +180,7 @@ shared_ptr<CodeMeshGeometry> CodeMeshGeometry::loadCodeMesh(LightShaderProgram &
 	return geometry;
 }
 //------------------------------------------------------------
-DynamicTextureGeometry *DynamicTextureGeometry::loadTextureGeometry(ExplosionShaderProgram program, const std::string textureName, std::vector<float> explosionVertexData) {
+DynamicTextureGeometry *DynamicTextureGeometry::loadTextureGeometry(ShaderProgram &program, const std::string textureName, std::vector<float> explosionVertexData) {
 	DynamicTextureGeometry *geometry = new DynamicTextureGeometry;
 	geometry->texture = pgr::createTexture(textureName);
 

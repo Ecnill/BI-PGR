@@ -43,6 +43,7 @@ void ConfigHolder::readConfigFile(const string &configFilePath) {
 	SHADER_SKYBOX = createShaderFilenames(configValues["SHADER_SKYBOX_PREFIX"]);  
 	SHADER_LIGHT = createShaderFilenames(configValues["SHADER_LIGHT_PREFIX"]);
 	SHADER_EXPLOSION = createShaderFilenames(configValues["SHADER_EXPLOSION_PREFIX"]);
+	SHADER_STATUS = createShaderFilenames(configValues["SHADER_STATUS_PREFIX"]);
 
 	SKYBOX_CUBE_TEXTURE_FILES = createSkyboxTextureFilenames(configValues["SKYBOX_CUBE_TEXTURE_FILE_PREFIX"]);
 

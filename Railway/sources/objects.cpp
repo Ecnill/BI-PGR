@@ -217,7 +217,7 @@ StoneObject::StoneObject() {
 	modelMatrix = rotate(modelMatrix, 90.0f, vec3(1, 0, 0));
 	modelMatrix = scale(modelMatrix, vec3(size));
 }
-
+//------------------------------------------------------------
 mat4 SkyBoxObject::getInversePVmatrix(mat4 view, mat4 projection) {
 	// crate view rotation matrix by using view matrix with cleared translation
 	glm::mat4 viewRotation = view;
@@ -225,7 +225,7 @@ mat4 SkyBoxObject::getInversePVmatrix(mat4 view, mat4 projection) {
 	// vertex shader will translate screen space coordinates (NDC) using inverse PV matrix
 	return inverse(projection * viewRotation);
 }
-
+//------------------------------------------------------------
 ExplosionObject::ExplosionObject() : show(false), finish(false) {
 	showObjectCreatedMessage();
 	size = config->FACTORY_SIZE;
@@ -255,3 +255,16 @@ void ExplosionObject::update(float elapsedTime) {
 		}
 	}
 }
+//------------------------------------------------------------
+StatusObject::StatusObject() : isDay(false), actualFrame(0) {
+	showObjectCreatedMessage();
+	direction = DEFAULT_DIRECTION;
+	size = 0.1f;
+	position = glm::vec3(0.0f, 0.0f, 1.0f);
+}
+
+void StatusObject::update(float elapsedTime) {
+	actualFrame = (isDay) ? 0 : 1;
+}
+
+

@@ -68,5 +68,10 @@ class ExplosionShaderProgram : public ShaderProgram {
 		GLint fogStartLocation;
 		GLint fogEndLocation;
 };
+//------------------------------------------------------------
+class StatusShaderProgram : public ShaderProgram {
+	public:
+		void init(bool isDay, const std::string & fileVertexShader, const std::string & fileFragmentShader);
+};
  
 #endif // __SHADER_PROGRAM_H

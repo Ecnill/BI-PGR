@@ -1,5 +1,5 @@
 #include "../headers/shader_program.h"
-
+//------------------------------------------------------------
 GLuint ShaderProgram::createShaderProgramFromFile(const std::string &fileVertexShader, const std::string &fileFragmentShader) {
 	std::vector<GLuint> shaders;
 	shaders.push_back(pgr::createShaderFromFile(GL_VERTEX_SHADER, fileVertexShader));
@@ -8,7 +8,7 @@ GLuint ShaderProgram::createShaderProgramFromFile(const std::string &fileVertexS
 	CHECK_GL_ERROR();
 	return program;
 }
-
+//------------------------------------------------------------
 void LightShaderProgram::setTransformUniforms(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) {
 	glm::mat4 PVM = projection * view * model;
 	glUniformMatrix4fv(PVMmatrixLocation, 1, GL_FALSE, glm::value_ptr(PVM));
@@ -18,7 +18,7 @@ void LightShaderProgram::setTransformUniforms(const glm::mat4 &model, const glm:
 	glUniformMatrix4fv(normalMatrixLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 	CHECK_GL_ERROR();
 }
-
+//------------------------------------------------------------
 void LightShaderProgram::init(const std::string & fileVertexShader, const std::string & fileFragmentShader) {
 	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
 	// get vertex attributes locations, if the shader does not have this uniform -> return -1
@@ -52,7 +52,7 @@ void LightShaderProgram::init(const std::string & fileVertexShader, const std::s
 	pointLightPosition = glGetUniformLocation(program, "pointLightPosition");
 	pointLightDirection = glGetUniformLocation(program, "pointLightDirection");
 }
-
+//------------------------------------------------------------
 void LightShaderProgram::setMaterialUniforms(Material *material) {
 	if (material != nullptr) {
 		glUniform3fv(diffuseLocation, 1, glm::value_ptr(material->diffuse));  // 2nd parameter must be 1 - it declares number of vectors in the vector array
@@ -70,7 +70,7 @@ void LightShaderProgram::setMaterialUniforms(Material *material) {
 	}
 	CHECK_GL_ERROR();
 }
-
+//------------------------------------------------------------
 void SkyboxShaderProgram::init(const std::string &fileVertexShader, const std::string &fileFragmentShader) {
 	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
 	// handles to vertex attributes locations
@@ -81,7 +81,7 @@ void SkyboxShaderProgram::init(const std::string &fileVertexShader, const std::s
 
 	fogActiveLocation = glGetUniformLocation(program, "fogActive");
 }
-
+//------------------------------------------------------------
 void ExplosionShaderProgram::init(bool inFire, const std::string & fileVertexShader, const std::string & fileFragmentShader) {
 	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
 	posLocation = glGetAttribLocation(program, "position");
@@ -100,4 +100,14 @@ void ExplosionShaderProgram::init(bool inFire, const std::string & fileVertexSha
 	}
 	VmatrixLocation = glGetUniformLocation(program, "Vmatrix");
 	MmatrixLocation = glGetUniformLocation(program, "Mmatrix");
+}
+//------------------------------------------------------------
+void StatusShaderProgram::init(bool isDay, const std::string & fileVertexShader, const std::string & fileFragmentShader) {
+	program = createShaderProgramFromFile(fileVertexShader, fileFragmentShader);
+	posLocation = glGetAttribLocation(program, "position");
+	texCoordLocation = glGetAttribLocation(program, "texCoord");
+	// get uniforms locations
+	PVMmatrixLocation = glGetUniformLocation(program, "PVMmatrix");
+	texSamplerLocation = glGetUniformLocation(program, "texSampler");
+	CHECK_GL_ERROR();
 }

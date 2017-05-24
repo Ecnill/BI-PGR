@@ -33,6 +33,7 @@ void Scene::initShaders() {
 	lightProgram.init(config->SHADER_LIGHT.first, config->SHADER_LIGHT.second);
 	skyboxProgram.init(config->SHADER_SKYBOX.first, config->SHADER_SKYBOX.second);
 	explosionProgram.init(isFire, config->SHADER_EXPLOSION.first, config->SHADER_EXPLOSION.second);
+	statusProgram.init(isDay, config->SHADER_STATUS.first, config->SHADER_STATUS.second);
 }
 
 void Scene::restart() {
@@ -66,6 +67,7 @@ void Scene::updateObjects(float elapsedTime) {
 	if (explosion->finish) {
 		((FactoryObject*)factory)->destroyed = true;
 	}
+	dayStatus->isDay = isDay;
 }
 
 void Scene::show() {
@@ -99,8 +101,6 @@ void Scene::show() {
 	glDisable(GL_STENCIL_TEST);
 	drawMesh(trainFlatcar->geometry.get(), trainFlatcar->modelMatrix);
 
-	
-
 	drawMesh(houseType1->geometry.get(), houseType1->modelMatrix);
 	drawMesh(houseType2->geometry.get(), houseType2->modelMatrix);
 
@@ -117,7 +117,8 @@ void Scene::show() {
 		drawMesh(trackPart->geometry.get(), trackPart->modelMatrix);
 	}
 	drawExplosion();
-	drawMesh(rock->geometry.get(), rock->modelMatrix);
+	drawDayStatus();
+	//drawMesh(rock->geometry.get(), rock->modelMatrix);
 }
 
 void Scene::drawWithSpotLight(Object *object) {
@@ -202,6 +203,35 @@ void Scene::drawExplosion() {
 		glDisable(GL_BLEND);
 	}
 }
+void Scene::drawDayStatus() {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(statusProgram.program);
+
+	glm::mat4 rotationMatrix = glm::mat4(camera->view[0], camera->view[1], camera->view[2], glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	rotationMatrix = glm::transpose(rotationMatrix);
+	glm::mat4 matrix = glm::translate(glm::mat4(1.0f), dayStatus->position);
+	matrix = glm::scale(matrix, glm::vec3(dayStatus->size));
+	matrix = matrix*rotationMatrix;
+	glm::mat4 PVMmatrix = camera->projection * camera->view * matrix;
+
+	glUniformMatrix4fv(statusProgram.PVMmatrixLocation, 1, GL_FALSE, glm::value_ptr(PVMmatrix));
+	glUniform1i(statusProgram.texSamplerLocation, 0);
+	DynamicTextureGeometry *geometry;
+	if (dayStatus->isDay) {
+		geometry = dayStatus->textures[1];
+	} else {
+		geometry = dayStatus->textures[0];
+	}
+	
+	glBindVertexArray(geometry->vertexArrayObject);
+	glBindTexture(GL_TEXTURE_2D, geometry->texture);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, geometry->numTriangles);
+	resetProgram();
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+}
 
 void Scene::setWindowSize(const unsigned int newWidth, const unsigned int newHeight) {
 	sceneState.windowHeight = newHeight;
@@ -226,7 +256,7 @@ void Scene::initModels() {
 	stone->geometry = ObjectMeshGeometry::loadMultiMesh(config->STONE_MODEL_PATH, lightProgram);*/
 
 	rock = new StoneObject;
-	rock->geometry = CodeMeshGeometry::loadCodeMesh(lightProgram, config->STONE_TEXTURE, stoneTriangles, stoneVertices);
+//	rock->geometry = CodeMeshGeometry::loadCodeMesh(lightProgram, config->STONE_TEXTURE, stoneTriangles, stoneVertices);
 
 	explosion = new ExplosionObject;
 	for (size_t i = 1; i < explosion->countFrames; ++i) {
@@ -237,13 +267,14 @@ void Scene::initModels() {
 			textureName = "data/explosion/explosion1_00";
 		}
 		textureName += std::to_string(i) + ".png";
-		explosion->textures.push_back(DynamicTextureGeometry::loadTextureGeometry(explosionProgram, textureName, explosion->explosionNumQuadVertices));
+		explosion->textures.push_back(DynamicTextureGeometry::loadTextureGeometry(explosionProgram, textureName, explosion->numQuadVertices));
 	}
 
-	glClearStencil(0);
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
+	dayStatus = new StatusObject;
+	for (size_t i = 0; i < 2; ++i) {
+		std::string textureName = "data/daystatus/status_0" + std::to_string(i) + ".png";
+		dayStatus->textures.push_back(DynamicTextureGeometry::loadTextureGeometry(statusProgram, textureName, dayStatus->numQuadVertices));
+	}
 
 	train = new TrainObject;
 	train->geometry = ObjectMeshGeometry::loadMultiMesh(config->TRAIN_MODEL_PATH, this->lightProgram);

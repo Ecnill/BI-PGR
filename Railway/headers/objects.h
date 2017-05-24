@@ -44,6 +44,14 @@ class DynamicObject : public Object {
 		float speed;
 		float currentTime;
 		float startTime;
+
+		const vector<float> numQuadVertices = {
+			// x      y     z     u     v
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		};
 };
 
 class MovingObject : public DynamicObject {
@@ -149,7 +157,17 @@ class SkyBoxObject : public Object {
 
 		bool fog;
 };
-
+//------------------------------------------------------------
+class StatusObject : public DynamicObject {
+	public:
+		StatusObject();
+		std::string getObjectName() { return "StatusObject"; }
+		void update(float elapsedTime);
+		std::vector<DynamicTextureGeometry*> textures;
+		bool isDay;
+		unsigned actualFrame;
+};
+//------------------------------------------------------------
 class ExplosionObject : public DynamicObject {
 	public:
 		ExplosionObject();
@@ -162,14 +180,6 @@ class ExplosionObject : public DynamicObject {
 		float frameDuration;
 		unsigned actualFrame;
 		std::vector<DynamicTextureGeometry*> textures;
-
-		const vector<float> explosionNumQuadVertices = {
-			// x      y     z     u     v
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-			1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
-			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 
-			1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 
-		};
 };
 
 #endif // __OBJECTS_H

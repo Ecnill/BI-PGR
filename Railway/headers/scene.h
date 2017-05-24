@@ -30,16 +30,17 @@ class Scene {
 		void fallDumpster();
 		void startFire();
 		void goTrain();
+		Object *dumpsterType1;
 
 		SceneState sceneState;
 		Camera *camera;
 
+		// flags
+		bool isFire;
 		bool isFog;
 		bool isSpotLight;
 		bool isDay;
 		bool isPointLight;
-
-		Object *dumpsterType1;
 
 	private:
 		static Scene *instance;
@@ -49,6 +50,7 @@ class Scene {
 		LightShaderProgram lightProgram;
 		SkyboxShaderProgram skyboxProgram;
 		ExplosionShaderProgram explosionProgram;
+		StatusShaderProgram statusProgram;
 		
 		// models
 		void initModels();
@@ -57,25 +59,21 @@ class Scene {
 		DynamicObject *train;
 
 		Object *rock;
-
 		Object *stone;
 
 		Object *trainFlatcar;
 		Object *factory;
-		
 		Object *dumpsterType2;
 		Object *houseType1;
 		Object *houseType2;
 
 		ExplosionObject *explosion;
+		StatusObject *dayStatus;
 		SkyBoxObject *skybox;
 
 		std::vector<Object*> trainFreightcars;
 		std::vector<Object*> windmills;
 		std::vector<Object*> track;
-
-		// flags
-		bool isFire;
 
 		// draw methods
 		void drawWithSpotLight(Object *object);
@@ -83,8 +81,8 @@ class Scene {
 		void drawMesh(MeshGeometry *geometry, const mat4 &modelMatrix);
 		void drawSkybox();
 		void drawExplosion();
+		void drawDayStatus();
 		
-
 		// utils, config
 		void resetProgram();
 		void deleteModels();

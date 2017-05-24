@@ -48,7 +48,7 @@ class CodeMeshGeometry : public MeshGeometry {
 //------------------------------------------------------------
 class DynamicTextureGeometry : public MeshGeometry {
 	public:
-		static DynamicTextureGeometry *loadTextureGeometry(ExplosionShaderProgram program, const std::string textureName, std::vector<float> explosionVertexData);
+		static DynamicTextureGeometry *loadTextureGeometry(ShaderProgram &program, const std::string textureName, std::vector<float> explosionVertexData);
 
 		GLuint texture;
 };

@@ -30,6 +30,7 @@ class ConfigHolder {
 		pair<string, string> SHADER_SKYBOX;
 		pair<string, string> SHADER_LIGHT;
 		pair<string, string> SHADER_EXPLOSION;
+		pair<string, string> SHADER_STATUS;
 		
 		// objects
 		float TRAIN_SIZE;
