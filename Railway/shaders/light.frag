@@ -25,11 +25,12 @@ void main() {
 	}
 
 	if (fogActive) {
-		float z = gl_FragCoord.z;
-		float density = 2.5f;
+		float z = gl_FragCoord.z / gl_FragCoord.w;
+		float density = 0.5f;
 		float e = 2.718f;
 		float f = pow(e, -(density * z));
 		vec4 fog_color = vec4(0.9f, 0.9f, 0.9f, 0.9f);
-		color_f += f * color_f + (1.0f - f) * fog_color;
+		color_f = f * color_f + (1.0f - f) * fog_color;
 	}
+
 }

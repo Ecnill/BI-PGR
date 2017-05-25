@@ -65,7 +65,7 @@ vec4 directionalLight(Light light, Material material, vec3 vertexPosition, vec3 
   return vec4(ret, 1.0);
 }
 //-------------------------------------------------------
-vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
+vec4 pointLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
   vec3 ret = vec3(0.0);
   vec3 L = normalize(light.position - vertexPosition);
   vec3 R = reflect(-L, vertexNormal);
@@ -76,17 +76,18 @@ vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexN
   return vec4(ret, 1.0);
 }
 //-------------------------------------------------------
-vec4 pointLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
+vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
 	vec3 ret = vec3(0.0f);
 	vec3 L = normalize(light.position - vertexPosition);
 	vec3 R = reflect(-L, vertexNormal);
 	vec3 V = normalize(-vertexPosition);
 	float spotCoef = max(0.0f, dot(-L, light.spotDirection));
-
-	ret += material.ambient * light.ambient;
-	ret += material.diffuse * light.diffuse * max(0.0f, dot(vertexNormal, L));
-	ret += material.specular * light.specular * pow(max(0.0f, dot(R, V)), material.shininess);
-	ret *= pow(spotCoef, light.spotExponent);
+	if (dot(-L, light.spotDirection) > light.spotCosCutOff) {
+		ret += material.ambient * light.ambient;
+		ret += material.diffuse * light.diffuse * max(0.0f, dot(vertexNormal, L));
+		ret += material.specular * light.specular * pow(max(0.0f, dot(R, V)), material.shininess);
+		ret *= pow(spotCoef, light.spotExponent);
+	}
 	return vec4(ret, 1.0f);
 }
 //-------------------------------------------------------
@@ -96,7 +97,7 @@ void main() {
 	sun.ambient  = vec3(0.0);
 	sun.diffuse  = vec3(1.0, 1.0, 0.5f);
 	sun.specular = vec3(1.0);
-	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), -2.50f, sin(time * sunSpeed), 10.0f)).xyz;
+	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), -2.50f, sin(time * sunSpeed), 1.0f)).xyz;
 
 	Light trainReflector;
 	trainReflector.ambient       = vec3(0.2f);
@@ -104,15 +105,15 @@ void main() {
 	trainReflector.specular      = vec3(1.0);
 	trainReflector.spotCosCutOff = 0.95f;
 	trainReflector.spotExponent  = 0.0;
-	trainReflector.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
-	trainReflector.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
+	trainReflector.position = (vec3(0.0f));
+	trainReflector.spotDirection = normalize(vec3(0.0f, 0.0f, -1.0f));
 
 	Light point;
 	point.ambient		= vec3(0.2f);
 	point.diffuse		= vec3(0.03f);
 	point.specular		= vec3(0.3f);
 	point.spotExponent	= 0.2f;
-	point.position		=  (Vmatrix * vec4(pointLightPosition, 10.0f)).xyz;
+	point.position		=  (Vmatrix * vec4(pointLightPosition, 1.0f)).xyz;
 	point.spotDirection	= normalize((Vmatrix * vec4(pointLightDirection, 0.0f)).xyz);;
 
 	vec3 vertexPosition = (Vmatrix * Mmatrix * vec4(position, 1.0)).xyz;       
