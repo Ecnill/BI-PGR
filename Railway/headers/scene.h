@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       scene.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Main program class, has all scene information, objects, flags.
+*
+*/
+//---------------------------------------------------------------------------------------
 #ifndef __SCENE_H
 #define __SCENE_H
 #include <memory>

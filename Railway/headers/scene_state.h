@@ -1,9 +1,9 @@
 //---------------------------------------------------------------------------------------
 /**
 * \file       scene_state.h
-* \author     Julia Ostrokomorets
-* \date       2017/05/01
-* \brief      Header file and implementation of Scene State class. 
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief	  Header file and implementation of Scene State class. 
 *
 */
 //---------------------------------------------------------------------------------------

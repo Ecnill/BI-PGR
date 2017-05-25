@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       config_holder.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Header of Config Holder class has some of application's variables, 
+*			  some of them can be changed on runntime.
+*
+*/
+//---------------------------------------------------------------------------------------
 #ifndef __CONFIG_HOLDER_H
 #define __CONFIG_HOLDER_H
 #include <sstream>

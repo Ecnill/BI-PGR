@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       mesh_geometry.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Different ways of mesh presentation in source code.
+*
+*/
+//---------------------------------------------------------------------------------------
 #ifndef __MESH_GEOMETRY_H
 #define __MESH_GEOMETRY_H
 #include <memory>

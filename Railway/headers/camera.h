@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       camera.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Header of Camera class with basic camera behavior methods.
+*
+*/
+//---------------------------------------------------------------------------------------
+
 #ifndef __CAMERA_H
 #define __CAMERA_H
 #include <algorithm>
@@ -35,7 +45,6 @@ class Camera {
 		void goBackwards(float timeDelta);
 		void lookUp();
 		void lookDown();
-
 		void lookAtObject(vec3 newPosition);
 
 		void setViewMatrix();
@@ -49,7 +58,6 @@ class Camera {
 		
 	private:
 		vec3 checkBorders(float timeDelta, float inver);
-
 		float speed;
 		float viewAngleX;
 		vec3 position;

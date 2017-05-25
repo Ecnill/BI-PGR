@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       rock.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Stone object.
+*
+*/
+//---------------------------------------------------------------------------------------
 #ifndef __STONE_H
 #define __STONE_H
 #include <vector>

@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------
+/**
+* \file       objects.h
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
+* \brief      Description of all scene objects.
+*
+*/
+//---------------------------------------------------------------------------------------
 #ifndef __OBJECTS_H
 #define __OBJECTS_H
 #include <memory>

@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------------------
 /**
 * \file       material.h
-* \author     Julia Ostrokomorets
-* \date       2017/05/01
+* \author     Julia Ostrokomorets <ostroiul@fit.cvut.cz>, <ecnill.j@gmail.com>
+* \date       May 2017
 * \brief      Header file and implementation of Material class.
 *
 */
