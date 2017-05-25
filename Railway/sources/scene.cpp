@@ -91,7 +91,9 @@ void Scene::show() {
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	drawMesh(factory->geometry.get(), factory->modelMatrix);
+	if (!((FactoryObject*)factory)->destroyed) {
+		drawMesh(factory->geometry.get(), factory->modelMatrix);
+	}
 	glStencilFunc(GL_ALWAYS, 2, 0xFF);
 	drawMesh(dumpsterType2->geometry.get(), dumpsterType2->modelMatrix);
 	glStencilFunc(GL_ALWAYS, 3, 0xFF);
@@ -118,7 +120,7 @@ void Scene::show() {
 	}
 	drawExplosion();
 	drawDayStatus();
-	//drawMesh(rock->geometry.get(), rock->modelMatrix);
+	drawMesh(rock->geometry.get(), rock->modelMatrix);
 }
 
 void Scene::drawWithSpotLight(Object *object) {
@@ -256,7 +258,7 @@ void Scene::initModels() {
 	stone->geometry = ObjectMeshGeometry::loadMultiMesh(config->STONE_MODEL_PATH, lightProgram);*/
 
 	rock = new StoneObject;
-//	rock->geometry = CodeMeshGeometry::loadCodeMesh(lightProgram, config->STONE_TEXTURE, stoneTriangles, stoneVertices);
+	rock->geometry = CodeMeshGeometry::loadCodeMesh(lightProgram, config->STONE_TEXTURE, stoneTriangles, stoneVertices);
 
 	explosion = new ExplosionObject;
 	for (size_t i = 1; i < explosion->countFrames; ++i) {

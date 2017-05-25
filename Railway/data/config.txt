@@ -79,7 +79,7 @@ TRACK_SIZE = 0.5
 
 # 12) Stone texture
 STONE_TEXTURE = ./data/models/rock/rock.jpg
-STONE_SIZE = 20
+STONE_SIZE = 0.05
 STONE_PATH = ./data/models/rock/stone.obj
 ###############################################################
 

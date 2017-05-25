@@ -149,20 +149,21 @@ shared_ptr<CodeMeshGeometry> CodeMeshGeometry::loadCodeMesh(LightShaderProgram &
 
 	glGenBuffers(1, &(s->vertexBufferObject));
 	glBindBuffer(GL_ARRAY_BUFFER, s->vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-	// copy our temporary index array to opengl and free the array
-	glGenBuffers(1, &(s->elementBufferObject));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->elementBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	
 	glEnableVertexAttribArray(shader.posLocation);
 	// vertices of triangles - start at the beginning of the array
 	glVertexAttribPointer(shader.posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
 
 	glEnableVertexAttribArray(shader.normalLocation);
 	// normal of vertex starts after the color (interlaced array)
-	glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	// copy our temporary index array to opengl and free the array
+	glGenBuffers(1, &(s->elementBufferObject));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->elementBufferObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned int) * triangles.size(), triangles.data(), GL_STATIC_DRAW);
+
 	glBindVertexArray(0);
 
 	s->numTriangles = triangles.size() / 3;
